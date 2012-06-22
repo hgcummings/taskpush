@@ -24,7 +24,7 @@ app.post('/tasks/', function(req, res){
         console.log(error);
         res.send(500);
       } else {
-      	res.send(204);
+      	res.send(200);
       }
   });
 });
