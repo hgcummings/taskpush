@@ -22,9 +22,11 @@ app.post('/tasks/', function(req, res){
     }, function(error, response, body) {
       if (error) {
         console.log(error);
-        res.send(500);
+        res.send("", 500);
       } else {
-      	res.send("");
+        // Always send an empty response, since we don't want to pay for a return message
+        console.log(body);
+        res.send("", response.statusCode);
       }
   });
 });
