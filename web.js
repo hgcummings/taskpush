@@ -5,7 +5,8 @@ var app = express.createServer(express.logger());
 app.use(express.bodyParser());
 
 app.post('/tasks/', function(req, res){
-  console.log(req.body.message);
+  console.log("Incoming request:");
+  console.log(req.body);
 
   var taskReq = require('request'),
    username = "username",
@@ -20,6 +21,7 @@ app.post('/tasks/', function(req, res){
       url: url,
       body: "task[content]=" + req.body.message
     }, function(error, response, body) {
+      console.log("Response from checkvist:");
       if (error) {
         console.log(error);
         res.send("", 500);
