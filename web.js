@@ -5,7 +5,7 @@ var uuid = require('node-uuid');
 
 app.use(express.bodyParser());
 
-app.post('/tasks/', function(req, res){
+var pushTask = function(req, res){
   console.info(req.body);
 
   var taskReq = require('request'),
@@ -33,7 +33,10 @@ app.post('/tasks/', function(req, res){
         res.send("", response.statusCode);
       }
   });
-});
+};
+
+app.get('/tasks/', pushTask);
+app.post('/tasks/', pushTask);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
