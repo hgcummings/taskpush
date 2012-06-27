@@ -6,7 +6,8 @@ var uuid = require('node-uuid');
 app.use(express.bodyParser());
 
 var pushTask = function(req, res){
-  console.info(req.body);
+  var id = req.param("id", uuid.v1());
+  console.info({ type: "request", identifier: id, query: req.query, body: req.body});
 
   var taskReq = require('request'),
    username = "username",
@@ -21,14 +22,14 @@ var pushTask = function(req, res){
       url: url,
       body: "task[content]=" + req.param("message")
     }, function(error, response, body) {
-      var id = req.param("id", uuid.v1());
+      
       if (error) {
         // This indicates a transport error rather than an error response from checkvist
-        console.error(id + ": " + error);
+        console.error({ type: "response", identifier: id, error: error});
         res.send("", 500);
       } else {
         // Always send an empty response, since we don't want to pay for a return message
-        console.info(id + ": " + body);
+        console.info({ type: "response", identifier: id, body: body});
         // Pass checkvist response code back to the caller, so they can retry if necessary
         res.send("", response.statusCode);
       }
