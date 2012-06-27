@@ -15,24 +15,26 @@ var pushTask = function(req, res){
    auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
    url = "http://checkvist.com/checklists/checklist_id/tasks.json";
 
-  taskReq.post({
-  	  headers : {
-        'Authorization': auth
-  	  },
-      url: url,
-      body: "task[content]=" + req.param("message")
-    }, function(error, response, body) {
-      
-      if (error) {
-        // This indicates a transport error rather than an error response from checkvist
-        console.error({ type: "response", identifier: id, error: error});
-        res.send("", 500);
-      } else {
-        // Always send an empty response, since we don't want to pay for a return message
-        console.info({ type: "response", identifier: id, body: body});
-        // Pass checkvist response code back to the caller, so they can retry if necessary
-        res.send("", response.statusCode);
+  req.param("message").split().forEach(function(taskContent) {
+    taskReq.post(
+      {
+    	  headers : { 'Authorization': auth },
+        url: url,
+        body: "task[content]=" + taskContent
+      },
+      function(error, response, body) {  
+        if (error) {
+          // This indicates a transport error rather than an error response from checkvist
+          console.error({ type: "response", identifier: id, error: error});
+          res.send("", 500);
+        } else {
+          // Always send an empty response, since we don't want to pay for a return message
+          console.info({ type: "response", identifier: id, body: body});
+          // Pass checkvist response code back to the caller, so they can retry if necessary
+          res.send("", response.statusCode);
+        }
       }
+    );
   });
 };
 
