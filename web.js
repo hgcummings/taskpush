@@ -1,6 +1,7 @@
 var express = require('express');
 
 var app = express.createServer(express.logger());
+var uuid = require('node-uuid');
 
 app.use(express.bodyParser());
 
@@ -18,15 +19,16 @@ app.post('/tasks/', function(req, res){
         'Authorization': auth
   	  },
       url: url,
-      body: "task[content]=" + req.body.message
+      body: "task[content]=" + req.param("message")
     }, function(error, response, body) {
+      var id = req.param("id", uuid.v1());
       if (error) {
-        // This indicates a transport error rather than an error respons from checkvist
-        console.error(req.body.id + ": " + error);
+        // This indicates a transport error rather than an error response from checkvist
+        console.error(id + ": " + error);
         res.send("", 500);
       } else {
         // Always send an empty response, since we don't want to pay for a return message
-        console.info(req.body.id + ": " + body);
+        console.info(id + ": " + body);
         // Pass checkvist response code back to the caller, so they can retry if necessary
         res.send("", response.statusCode);
       }
