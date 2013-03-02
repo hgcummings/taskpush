@@ -38,8 +38,12 @@ var pushTask = function(req, res){
   });
 };
 
-app.head('/tasks/', function(req, res) {
-  res.send("", 200);
+app.all('/tasks/', function(req, res) {
+  if (req.method = 'HEAD') {
+    res.send("", 200);
+  } else {
+    next();
+  }
 });
 app.get('/tasks/', pushTask);
 app.post('/tasks/', pushTask);
