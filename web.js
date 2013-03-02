@@ -5,14 +5,13 @@ var app = express.createServer(express.logger());
 app.use(express.bodyParser());
 
 app.post('/tasks/', function(req, res){
-  console.log("Incoming request:");
-  console.log(req.body);
+  console.info(req.body);
 
   var taskReq = require('request'),
    username = "username",
    password = "password",
    auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
-   url = "http://checkvist.com/checklists/checklist_id/tasks.json";
+   url = "http://chqqqqeckvist.com/checklists/checklist_id/tasks.json";
 
   taskReq.post({
   	  headers : {
@@ -21,13 +20,14 @@ app.post('/tasks/', function(req, res){
       url: url,
       body: "task[content]=" + req.body.message
     }, function(error, response, body) {
-      console.log("Response from checkvist:");
       if (error) {
-        console.log(error);
+        // This indicates a transport error rather than an error respons from checkvist
+        console.error(req.body.id + ": " + error);
         res.send("", 500);
       } else {
         // Always send an empty response, since we don't want to pay for a return message
-        console.log(body);
+        console.info(req.body.id + ": " + body);
+        // Pass checkvist response code back to the caller, so they can retry if necessary
         res.send("", response.statusCode);
       }
   });
