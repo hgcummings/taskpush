@@ -20,7 +20,7 @@ var pushTask = function(req, res){
       {
     	  headers : { 'Authorization': auth },
         url: url,
-        body: "task[content]=" + taskContent
+        body: "task[content]=" + taskContent + " ^ASAP"
       },
       function(error, response, body) {  
         if (error) {
@@ -28,8 +28,8 @@ var pushTask = function(req, res){
           console.error({ type: "response", identifier: id, error: error});
           res.send("", 500);
         } else {
-          // Always send an empty response, since we don't want to pay for a return message
           console.info({ type: "response", identifier: id, body: body});
+          // Always send an empty response, since we don't want to pay for a return message
           // Pass checkvist response code back to the caller, so they can retry if necessary
           res.send("", response.statusCode);
         }
@@ -38,14 +38,7 @@ var pushTask = function(req, res){
   });
 };
 
-/*app.all('/tasks/', function(req, res) {
-  console.info(req.method);
-  if (req.method === 'HEAD') {
-    res.send("", 200);
-  } else {
-    next();
-  }
-});*/
+// Nexmo will only use our URL if we respond to a HEAD request with an HTTP 200
 app.head('/tasks/', function(req, res) {
   res.send("", 200);
 });
