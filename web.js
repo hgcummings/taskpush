@@ -39,7 +39,7 @@ var pushTask = function(req, res){
 };
 
 // Nexmo will only use our URL if we respond to a HEAD request with an HTTP 200
-app.all('/tasks/', function(req, res) {
+app.head('/tasks/', function(req, res) {
     res.send("", 200);
 });
 app.get('/tasks/', pushTask);
