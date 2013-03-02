@@ -5,21 +5,19 @@ var uuid = require('node-uuid');
 
 app.use(express.bodyParser());
 
+var httpAuth = 'Basic ' + new Buffer(process.env.CV_USERNAME + ':' + process.env.CV_API_KEY).toString('base64');
+var httpUrl = "http://checkvist.com/checklists/" + process.env.LIST_ID + "/tasks.json";
+
 var pushTask = function(req, res){
-    var id = req.param("id", uuid.v1());
+    var id = req.param("messageId", uuid.v1());
     console.info({ type: "request", identifier: id, query: req.query, body: req.body});
 
-    var taskReq = require('request'),
-        username = "username",
-        password = "password",
-        auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
-        url = "http://checkvist.com/checklists/checklist_id/tasks.json";
-
+    var taskReq = require('request');
     req.param("text").split("\n").forEach(function(taskContent) {
         taskReq.post(
             {
-                headers : { 'Authorization': auth },
-                url: url,
+                headers : { 'Authorization': httpAuth },
+                url: httpUrl,
                 body: "task[content]=" + taskContent + " ^ASAP"
             },
             function(error, response, body) {
