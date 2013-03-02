@@ -18,7 +18,7 @@ var pushTask = function(req, res){
             {
                 headers : { 'Authorization': httpAuth },
                 url: httpUrl,
-                body: "task[content]=" + taskContent + " ^ASAP"
+                body: "task[content]=" + taskContent
             },
             function(error, response, body) {
                 if (error) {
