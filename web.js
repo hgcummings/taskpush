@@ -1,6 +1,6 @@
 var express = require('express');
 
-var app = express.createServer(express.logger());
+var app = express();
 var uuid = require('node-uuid');
 
 app.use(express.bodyParser());
@@ -38,13 +38,16 @@ var pushTask = function(req, res){
   });
 };
 
-app.all('/tasks/', function(req, res) {
+/*app.all('/tasks/', function(req, res) {
   console.info(req.method);
   if (req.method === 'HEAD') {
     res.send("", 200);
   } else {
     next();
   }
+});*/
+app.head('/tasks/', function(req, res) {
+  res.send("", 200);
 });
 app.get('/tasks/', pushTask);
 app.post('/tasks/', pushTask);
