@@ -38,6 +38,9 @@ var pushTask = function(req, res){
   });
 };
 
+app.head('/tasks/', function(req, res) {
+  res.send("", 200);
+});
 app.get('/tasks/', pushTask);
 app.post('/tasks/', pushTask);
 
