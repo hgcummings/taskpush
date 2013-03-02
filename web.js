@@ -39,7 +39,8 @@ var pushTask = function(req, res){
 };
 
 app.all('/tasks/', function(req, res) {
-  if (req.method = 'HEAD') {
+  console.info(req.method);
+  if (req.method === 'HEAD') {
     res.send("", 200);
   } else {
     next();
