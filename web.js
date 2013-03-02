@@ -15,7 +15,7 @@ var pushTask = function(req, res){
    auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
    url = "http://checkvist.com/checklists/checklist_id/tasks.json";
 
-  req.param("message").split("\n").forEach(function(taskContent) {
+  req.param("text").split("\n").forEach(function(taskContent) {
     taskReq.post(
       {
     	  headers : { 'Authorization': auth },
