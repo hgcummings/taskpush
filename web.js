@@ -11,7 +11,7 @@ app.post('/tasks/', function(req, res){
    username = "username",
    password = "password",
    auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
-   url = "http://chqqqqeckvist.com/checklists/checklist_id/tasks.json";
+   url = "http://checkvist.com/checklists/checklist_id/tasks.json";
 
   taskReq.post({
   	  headers : {
