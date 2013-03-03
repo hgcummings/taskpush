@@ -1,5 +1,5 @@
 var express = require('express');
-var controller = require('controller');
+var controller = require('./lib/controller.js');
 
 var app = express();
 
