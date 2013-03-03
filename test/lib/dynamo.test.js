@@ -1,0 +1,1 @@
+var dynamo = process.env.USE_INSTRUMENTED ? require('../../lib-cov/dynamo.js') : require('../../lib/dynamo.js');
