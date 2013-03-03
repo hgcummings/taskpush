@@ -1,8 +1,12 @@
 var assert = require('assert');
 var sinon = require('sinon');
 
-var nexmo =
-    process.env.USE_INSTRUMENTED ? require('../../lib-cov/nexmo/policy.js') : require('../../lib/nexmo/policy.js');
+var checkvist = require('../../lib/checkvist.js');
+
+var nexmo = process.env.USE_INSTRUMENTED
+    ? require('../../lib-cov/nexmo/controller.js')
+    : require('../../lib/nexmo/controller.js');
+
 
 describe('nexmo', function() {
     before(function() {
@@ -16,14 +20,14 @@ describe('nexmo', function() {
     describe('#configure()', function() {
         var path = '/route/';
 
-        function configuredApp(callback) {
+        function configuredApp() {
             var spyApp = { head: sinon.spy(), get: sinon.spy() };
-            nexmo.configure(spyApp, path, callback);
+            nexmo(spyApp, path);
             return spyApp;
         }
 
         describe('HEAD handler', function() {
-            var spyApp = configuredApp(null);
+            var spyApp = configuredApp();
 
             before(function() {
                 assert(spyApp.head.calledOnce);
@@ -45,39 +49,40 @@ describe('nexmo', function() {
         });
 
         describe('GET handler', function() {
-            var callback;
             var spyApp;
             var handler;
             var request = { param: sinon.stub(), body: '' };
             var response;
             var messageId = '12345';
+            var taskContent = 'One task\nTwo task';
 
-            function arrange(messageText) {
-                callback = sinon.stub();
-                spyApp = configuredApp(callback);
+            beforeEach(function() {
+                sinon.stub(checkvist, "pushTasks");
+                spyApp = configuredApp();
                 assert(spyApp.get.calledOnce);
                 handler = spyApp.get.getCall(0).args[1];
                 response = { send: sinon.spy() };
                 request.param.withArgs("messageId").returns(messageId);
-                request.param.withArgs("text").returns(messageText);
-            }
+                request.param.withArgs("text").returns(taskContent);
+            });
+
+            afterEach(function() {
+                checkvist.pushTasks.restore();
+            });
 
             function act() {
                 handler(request, response);
-                assert(callback.calledOnce);
-                return callback.getCall(0).args[0];
+                assert(checkvist.pushTasks.calledOnce);
+                return checkvist.pushTasks.getCall(0).args[0];
             }
 
             it ('should be set up for the correct path', function() {
-                arrange();
-
                 assert.equal(path, spyApp.get.getCall(0).args[0]);
             });
 
             it ('should pass the user ID to the callback', function() {
                 var userId = '07890123456';
 
-                arrange('');
                 request.param.withArgs("msisdn").returns(userId);
 
                 var result = act();
@@ -86,35 +91,21 @@ describe('nexmo', function() {
             });
 
             it ('should pass the message ID to the callback', function() {
-                arrange('');
-
                 var result = act();
 
                 assert.equal(messageId, result.operationId);
             });
 
-            it ('should pass a single task to the callback', function() {
-                arrange('A task');
-
+            it ('should pass the task content to the callback', function() {
                 var result = act();
 
-                assert.deepEqual(['A task'], result.tasks)
-            });
-
-            it ('should pass a list of line-separated tasks to the callback', function() {
-                arrange('A task\nAnother task');
-
-                var result = act();
-
-                assert.deepEqual(["A task", "Another task"], result.tasks);
+                assert.equal(taskContent, result.tasks)
             });
 
             it ('should pass response object to the callback', function() {
-                arrange('');
-
                 act();
 
-                assert.equal(response, callback.getCall(0).args[1]);
+                assert.equal(response, checkvist.pushTasks.getCall(0).args[1]);
             });
         });
     });
