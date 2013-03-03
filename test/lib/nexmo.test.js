@@ -109,15 +109,12 @@ describe('nexmo', function() {
                 assert.deepEqual(["A task", "Another task"], result.tasks);
             });
 
-            it ('should return empty response with response code returned from callback', function() {
+            it ('should pass response object to the callback', function() {
                 arrange('');
-                var responseCode = 418; // I'm a teapot.
-                callback.returns(responseCode);
 
                 act();
 
-                assert(response.send.calledOnce);
-                assert.equal(responseCode, response.send.getCall(0).args[1]);
+                assert.equal(response, callback.getCall(0).args[1]);
             });
         });
     });
