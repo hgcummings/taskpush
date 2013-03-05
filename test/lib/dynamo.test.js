@@ -39,7 +39,7 @@ describe('dynamo', function() {
         });
 
         it('should return settings required for posting a task', function() {
-            dynamo.getSettings('', function(settings) {
+            dynamo.getSettings('', function(error, settings) {
                 assert(settings.checkvist);
                 assert(settings.checkvist.hasOwnProperty('apiKey'));
                 assert(settings.checkvist.hasOwnProperty('listId'));

@@ -29,7 +29,7 @@ describe('checkvist', function() {
         sinon.stub(console, "info");
         sinon.stub(console, "error");
         stubSettings = sinon.stub(store, 'getSettings');
-        stubSettings.withArgs(message.userId, sinon.match.func, sinon.match.func).callsArgWith(1, userSettings);
+        stubSettings.withArgs(message.userId, sinon.match.func).callsArgWith(1, null, userSettings);
     });
 
     after(function() {
