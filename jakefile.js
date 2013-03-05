@@ -2,7 +2,7 @@ var Mocha = require('mocha');
 var fs = require('fs');
 var path = require('path');
 
-desc('This is the default task.');
+desc('Just run the tests');
 task('test', [], function (params) {
     var mocha = new Mocha({
         ui: 'bdd',
