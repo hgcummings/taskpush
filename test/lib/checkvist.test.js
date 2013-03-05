@@ -2,7 +2,8 @@ var assert = require('assert');
 var sinon = require('sinon');
 var request = require('request');
 
-var store = require('../../lib/dynamo.js');
+var store =
+    process.env.USE_INSTRUMENTED ? require('../../lib-cov/dynamo.js') : require('../../lib/dynamo.js');
 
 var checkvist =
     process.env.USE_INSTRUMENTED ? require('../../lib-cov/checkvist.js') : require('../../lib/checkvist.js');
@@ -20,7 +21,7 @@ describe('checkvist', function() {
         checkvist: {
             username: 'test@example.com',
             apiKey: 'api_key',
-            checklistId: 'checklist_id'
+            listId: 'checklist_id'
         }
     };
 
@@ -28,7 +29,7 @@ describe('checkvist', function() {
         sinon.stub(console, "info");
         sinon.stub(console, "error");
         stubSettings = sinon.stub(store, 'getSettings');
-        stubSettings.withArgs(message.userId).returns(userSettings);
+        stubSettings.withArgs(message.userId, sinon.match.func, sinon.match.func).callsArgWith(1, userSettings);
     });
 
     after(function() {
@@ -66,7 +67,7 @@ describe('checkvist', function() {
         it('should make a POST to the correct URL', function() {
             act();
 
-            assert.equal('http://checkvist.com/checklists/checklist_id/import.json', requestArgs().url);
+            assert.equal('https://checkvist.com/checklists/checklist_id/import.json', requestArgs().url);
         });
 
         it('should specify the task content in the request body', function() {

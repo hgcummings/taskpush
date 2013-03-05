@@ -1,15 +1,50 @@
 var assert = require('assert');
-var dynamo = process.env.USE_INSTRUMENTED ? require('../../lib-cov/dynamo.js') : require('../../lib/dynamo.js');
+var sinon = require('sinon');
+
+var aws = require('aws-sdk');
 
 describe('dynamo', function() {
-   describe('#getSettings(userId)', function() {
-       it('should return settings required for posting a task', function() {
-           var result = dynamo.getSettings('');
+    var dynamo;
+    var stubClient = {};
 
-           assert(result.checkvist);
-           assert(result.checkvist.hasOwnProperty('apiKey'));
-           assert(result.checkvist.hasOwnProperty('checklistId'));
-           assert(result.checkvist.hasOwnProperty('username'));
-       })
-   });
+    before(function() {
+        var ddbConstructorStub = sinon.stub(aws, "DynamoDB");
+        ddbConstructorStub.returns({ client: stubClient });
+
+        var requirePath = process.env.USE_INSTRUMENTED ? '../../lib-cov/dynamo.js' : '../../lib/dynamo.js';
+        delete(require.cache[require.resolve(requirePath)]);
+        dynamo = require(requirePath);
+    });
+
+    after(function() {
+        aws.DynamoDB.restore();
+    });
+
+    describe('#getSettings(userId)', function() {
+        var userName = 'test@example.com';
+        var apiKey = 'foo';
+        var checklistId = 'bar';
+
+        var dummyResponse = {
+            Item: {
+                username: { S: userName },
+                apiKey: { S: apiKey },
+                listId: { S: checklistId }
+            }
+        };
+
+        before(function() {
+            stubClient.getItem = sinon.stub();
+            stubClient.getItem.callsArgWith(1, null, dummyResponse);
+        });
+
+        it('should return settings required for posting a task', function() {
+            dynamo.getSettings('', function(settings) {
+                assert(settings.checkvist);
+                assert(settings.checkvist.hasOwnProperty('apiKey'));
+                assert(settings.checkvist.hasOwnProperty('listId'));
+                assert(settings.checkvist.hasOwnProperty('username'));
+            });
+        })
+    });
 });
