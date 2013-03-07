@@ -35,11 +35,24 @@ describe('dynamo', function() {
 
         before(function() {
             stubClient.getItem = sinon.stub();
-            stubClient.getItem.callsArgWith(1, null, dummyResponse);
+        });
+
+        it('should chain errors back to the caller', function() {
+            var dummyError = 'Something has gone wrong!';
+            stubClient.getItem.callsArgWith(1, dummyError, null);
+
+            dynamo.getSettings('', function(error, settings) {
+                assert.equal(dummyError, error);
+                assert.equal(null, settings);
+            });
         });
 
         it('should return settings required for posting a task', function() {
+            stubClient.getItem.callsArgWith(1, null, dummyResponse);
+
             dynamo.getSettings('', function(error, settings) {
+                assert.equal(null, error);
+
                 assert(settings.checkvist);
                 assert(settings.checkvist.hasOwnProperty('apiKey'));
                 assert(settings.checkvist.hasOwnProperty('listId'));

@@ -16,7 +16,7 @@ namespace('test', function() {
 
     desc('Run tests with test coverage');
     task('cover', {async: true}, function() {
-        var command = ISTANBUL + " cover test.js";
+        var command = ISTANBUL + " cover test.js -x test.js";
         jake.exec(command, complete, print_opts);
     });
 
