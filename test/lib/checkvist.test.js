@@ -86,6 +86,16 @@ describe('checkvist', function() {
             assert.equal('test@example.com:api_key', plainTextAuthDetails);
         });
 
+        it('returns a 500 response if unable to load user settings', function() {
+            stubSettings.withArgs('X', sinon.match.func).callsArgWith(1, 'error');
+
+            checkvist.pushTasks({ userId: 'X', operationId: 'O' }, response);
+
+            assert(response.send.calledOnce);
+            assert.equal('', response.send.getCall(0).args[0]);
+            assert.equal(500, response.send.getCall(0).args[1]);
+        });
+
         it('should return an empty 500 response in the case of a transport error', function() {
             act();
 
