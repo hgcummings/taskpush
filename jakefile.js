@@ -1,36 +1,34 @@
-var Mocha = require('mocha');
-var fs = require('fs');
 var path = require('path');
+var ISTANBUL = path.resolve('./node_modules/.bin/istanbul');
+var COVERAGE_OPTS = '--lines 95 --statements 90 --branches 80 --functions 90';
 
-desc('Just run the tests');
-task('test', [], function (params) {
-    var mocha = new Mocha({
-        ui: 'bdd',
-        reporter: 'spec'
+var print_opts = {printStdout: true, printStderr: true};
+
+desc('Run tests and check test coverage');
+task('default', ['test:cover', 'test:check-coverage'], {async: true}, complete);
+
+namespace('test', function() {
+    desc('Run tests without coverage');
+    task('no-cov', {async: true}, function(args) {
+        var command = "test/run.js";
+        jake.exec(command, complete, print_opts);
     });
-    lookupFiles('test', true).forEach(function(file) { mocha.addFile(file) });
-    mocha.run();
+
+    desc('Run tests with test coverage');
+    task('cover', {async: true}, function() {
+        var command = ISTANBUL + " cover test.js";
+        jake.exec(command, complete, print_opts);
+    });
+
+    desc('Check test coverage');
+    task('check-coverage', {async: true}, function() {
+        var command = ISTANBUL + " check-coverage " + COVERAGE_OPTS;
+        jake.exec(command, complete, print_opts);
+    });
+
+    desc('Run acceptance tests');
+    task('acceptance', {async: true}, function() {
+        var command = "test/run.js -T acceptance --timeout 30000";
+        jake.exec(command, complete, print_opts);
+    });
 });
-
-function lookupFiles(currentPath, recursive) {
-    var files = [];
-
-    if (!(fs.existsSync(currentPath) || path.existsSync(currentPath))) currentPath += '.js';
-    var stat = fs.statSync(currentPath);
-    if (stat.isFile()) return currentPath;
-
-    fs.readdirSync(currentPath).forEach(function(file){
-        file = path.join(currentPath, file);
-        var stat = fs.statSync(file);
-        if (stat.isDirectory()) {
-            if (recursive) files = files.concat(lookupFiles(file, recursive));
-            return
-        }
-
-        var re = new RegExp('\\.(js)$');
-        if (!stat.isFile() || !re.test(file) || path.basename(file)[0] == '.') return;
-        files.push(file);
-    });
-
-    return files;
-}

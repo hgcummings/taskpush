@@ -8,7 +8,8 @@
   },
   "devDependencies": {
     "mocha": "1.8.x",
-    "sinon": "1.6.x"
+    "sinon": "1.6.x",
+    "istanbul": "0.1.x"
   },
   "engines": {
     "node": "0.8.x",
