@@ -7,14 +7,12 @@ var mocha = new Mocha({
     ui: 'bdd',
     reporter: 'spec'
 });
-addTestFiles(mocha);
+
+var fileList = new jake.FileList();
+fileList.include('./test/**/*.js');
+
+fileList.forEach(function (file) {
+    mocha.addFile(file);
+});
+
 mocha.run();
-
-function addTestFiles(mocha) {
-    var fileList = new jake.FileList();
-    fileList.include('./test/**/*.js');
-
-    fileList.forEach(function (file) {
-        mocha.addFile(file)
-    });
-}

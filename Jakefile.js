@@ -9,10 +9,7 @@ var jshint = require('jshint').JSHINT;
 var printOpts = {printStdout: true, printStderr: true};
 
 desc('Run jake test and jake lint');
-task('default', ['lint', 'test']);
-
-desc('Run tests and check test coverage');
-task('test', ['cover', 'check-coverage']);
+task('default', ['lint', 'check-coverage']);
 
 desc('Run tests with test coverage');
 task('cover', {async: true}, function() {
@@ -21,7 +18,7 @@ task('cover', {async: true}, function() {
 });
 
 desc('Check test coverage');
-task('check-coverage', {async: true}, function() {
+task('check-coverage', ['cover'], {async: true}, function() {
     var command = ISTANBUL + ' check-coverage ' + COVERAGE_OPTS;
     jake.exec(command, complete, printOpts);
 });
