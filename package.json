@@ -10,7 +10,8 @@
     "mocha": "1.8.x",
     "sinon": "1.6.x",
     "istanbul": "0.1.x",
-    "jake": "0.5.x"
+    "jake": "0.5.x",
+    "jshint": "1.1.x"
   },
   "engines": {
     "node": "0.8.x",

@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert');
 var sinon = require('sinon');
 
@@ -8,7 +10,7 @@ describe('dynamo', function() {
     var stubClient = {};
 
     before(function() {
-        var ddbConstructorStub = sinon.stub(aws, "DynamoDB");
+        var ddbConstructorStub = sinon.stub(aws, 'DynamoDB');
         ddbConstructorStub.returns({ client: stubClient });
 
         var requirePath = process.env.USE_INSTRUMENTED ? '../../lib-cov/dynamo.js' : '../../lib/dynamo.js';
@@ -58,6 +60,6 @@ describe('dynamo', function() {
                 assert(settings.checkvist.hasOwnProperty('listId'));
                 assert(settings.checkvist.hasOwnProperty('username'));
             });
-        })
+        });
     });
 });

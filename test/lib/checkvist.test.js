@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert');
 var sinon = require('sinon');
 var request = require('request');
@@ -26,8 +28,8 @@ describe('checkvist', function() {
     };
 
     before(function() {
-        sinon.stub(console, "info");
-        sinon.stub(console, "error");
+        sinon.stub(console, 'info');
+        sinon.stub(console, 'error');
         stubSettings = sinon.stub(store, 'getSettings');
         stubSettings.withArgs(message.userId, sinon.match.func).callsArgWith(1, null, userSettings);
     });
@@ -44,7 +46,7 @@ describe('checkvist', function() {
 
         beforeEach(function() {
             response = { send: sinon.spy() };
-            requestPostStub = sinon.stub(request, "post");
+            requestPostStub = sinon.stub(request, 'post');
         });
 
         afterEach(function() {

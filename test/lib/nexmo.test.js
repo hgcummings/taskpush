@@ -1,17 +1,18 @@
+'use strict';
+
 var assert = require('assert');
 var sinon = require('sinon');
 
 var checkvist =
     process.env.USE_INSTRUMENTED ? require('../../lib-cov/checkvist.js') : require('../../lib/checkvist.js');
 
-var nexmo = process.env.USE_INSTRUMENTED
-    ? require('../../lib-cov/nexmo/controller.js')
-    : require('../../lib/nexmo/controller.js');
+var nexmo = process.env.USE_INSTRUMENTED ?
+    require('../../lib-cov/nexmo/controller.js') : require('../../lib/nexmo/controller.js');
 
 
 describe('nexmo', function() {
     before(function() {
-        sinon.stub(console, "info");
+        sinon.stub(console, 'info');
     });
 
     after(function() {
@@ -58,13 +59,13 @@ describe('nexmo', function() {
             var taskContent = 'One task\nTwo task';
 
             beforeEach(function() {
-                sinon.stub(checkvist, "pushTasks");
+                sinon.stub(checkvist, 'pushTasks');
                 spyApp = configuredApp();
                 assert(spyApp.get.calledOnce);
                 handler = spyApp.get.getCall(0).args[1];
                 response = { send: sinon.spy() };
-                request.param.withArgs("messageId").returns(messageId);
-                request.param.withArgs("text").returns(taskContent);
+                request.param.withArgs('messageId').returns(messageId);
+                request.param.withArgs('text').returns(taskContent);
             });
 
             afterEach(function() {
@@ -84,7 +85,7 @@ describe('nexmo', function() {
             it ('should pass the user ID to the callback', function() {
                 var userId = '07890123456';
 
-                request.param.withArgs("msisdn").returns(userId);
+                request.param.withArgs('msisdn').returns(userId);
 
                 var result = act();
 
@@ -100,7 +101,7 @@ describe('nexmo', function() {
             it ('should pass the task content to the callback', function() {
                 var result = act();
 
-                assert.equal(taskContent, result.tasks)
+                assert.equal(taskContent, result.tasks);
             });
 
             it ('should pass response object to the callback', function() {
