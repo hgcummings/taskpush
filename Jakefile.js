@@ -3,7 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var ISTANBUL = path.resolve('./node_modules/.bin/istanbul');
-var COVERAGE_OPTS = '--lines 95 --statements 90 --branches 80 --functions 90';
+var COVERAGE_OPTS = '--lines 95 --statements 90 --branches 90 --functions 90';
 var jshint = require('jshint').JSHINT;
 
 var printOpts = {printStdout: true, printStderr: true};

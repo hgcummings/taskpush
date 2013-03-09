@@ -23,7 +23,7 @@ describe('nexmo', function() {
         var path = '/route/';
 
         function configuredApp() {
-            var spyApp = { head: sinon.spy(), get: sinon.spy() };
+            var spyApp = { head: sinon.spy(), post: sinon.spy() };
             nexmo(spyApp, path);
             return spyApp;
         }
@@ -50,7 +50,7 @@ describe('nexmo', function() {
             });
         });
 
-        describe('GET handler', function() {
+        describe('POST handler', function() {
             var spyApp;
             var handler;
             var request = { param: sinon.stub(), body: '' };
@@ -61,8 +61,8 @@ describe('nexmo', function() {
             beforeEach(function() {
                 sinon.stub(checkvist, 'pushTasks');
                 spyApp = configuredApp();
-                assert(spyApp.get.calledOnce);
-                handler = spyApp.get.getCall(0).args[1];
+                assert(spyApp.post.calledOnce);
+                handler = spyApp.post.getCall(0).args[1];
                 response = { send: sinon.spy() };
                 request.param.withArgs('messageId').returns(messageId);
                 request.param.withArgs('text').returns(taskContent);
@@ -79,7 +79,7 @@ describe('nexmo', function() {
             }
 
             it ('should be set up for the correct path', function() {
-                assert.equal(path, spyApp.get.getCall(0).args[0]);
+                assert.equal(path, spyApp.post.getCall(0).args[0]);
             });
 
             it ('should pass the user ID to the callback', function() {

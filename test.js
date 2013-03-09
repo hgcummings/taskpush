@@ -8,11 +8,8 @@ var mocha = new Mocha({
     reporter: 'spec'
 });
 
-var fileList = new jake.FileList();
-fileList.include('./test/**/*.js');
-
-fileList.forEach(function (file) {
-    mocha.addFile(file);
-});
+new jake.FileList()
+    .include('./test/**/*.js')
+    .forEach(function(file) { mocha.addFile(file); });
 
 mocha.run();
