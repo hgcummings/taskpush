@@ -44,7 +44,7 @@ describe('nexmo', function() {
                 var request = { header: sinon.stub() };
                 var response = { send: sinon.spy() };
                 request.header.withArgs('X-Forwarded-For').returns(ipAddress);
-                middleware(request, response, function() { handler(request, response) });
+                middleware(request, response, function() { handler(request, response); });
 
                 assert(response.send.calledOnce);
                 assert.equal(statusCode, response.send.getCall(0).args[1]);
@@ -97,7 +97,7 @@ describe('nexmo', function() {
             });
 
             function callEndpoint(request, response) {
-                middleware(request, response, function() { handler(request, response) });
+                middleware(request, response, function() { handler(request, response); });
             }
 
             function act() {
