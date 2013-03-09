@@ -34,37 +34,19 @@ describe('nexmo', function() {
                 assert(spyApp.head.calledOnce);
             });
 
-            function verifyReturnCode(ipAddress, statusCode) {
-                var middleware = spyApp.head.getCall(0).args[1];
-                var handler = spyApp.head.getCall(0).args[2];
-
-                var request = { header: sinon.stub() };
-                var response = { send: sinon.spy() };
-                request.header.withArgs('X-Forwarded-For').returns(ipAddress);
-                middleware(request, response, function() { handler(request, response); });
-
-                assert(response.send.calledOnce);
-                assert.equal(statusCode, response.send.getCall(0).args[1]);
-            }
-
             it ('should be set up for the correct path', function() {
                 assert.equal(path, spyApp.head.getCall(0).args[0]);
             });
 
             it ('should return an empty HTTP OK response', function() {
-                verifyReturnCode(VALID_IP, 200);
-            });
+                var handler = spyApp.head.getCall(0).args[1];
 
-            it ('should return a 404 for non-authorised IP address', function() {
-                verifyReturnCode(INVALID_IP, 404);
-            });
+                var request = { header: sinon.stub() };
+                var response = { send: sinon.spy() };
+                handler(request, response);
 
-            it ('should return an empty HTTP OK response if last IP in chain is whitelisted', function() {
-                verifyReturnCode(INVALID_IP + ', ' + VALID_IP, 200);
-            });
-
-            it ('should return a 404 if last IP in chain is not whitelisted', function() {
-                verifyReturnCode(VALID_IP + ', ' + INVALID_IP, 404);
+                assert(response.send.calledOnce);
+                assert.equal(200, response.send.getCall(0).args[1]);
             });
         });
 
@@ -77,6 +59,10 @@ describe('nexmo', function() {
             var taskContent = 'One task\nTwo task';
             var middleware;
 
+            function stubForwardedForHeader(ipAddresses) {
+                request.header.withArgs('X-Forwarded-For').returns(ipAddresses);
+            }
+
             beforeEach(function() {
                 sinon.stub(checkvist, 'pushTasks');
                 spyApp = configuredApp();
@@ -84,7 +70,7 @@ describe('nexmo', function() {
                 middleware = spyApp.post.getCall(0).args[1];
                 handler = spyApp.post.getCall(0).args[2];
                 response = { send: sinon.spy() };
-                request.header.withArgs('X-Forwarded-For').returns(VALID_IP);
+                stubForwardedForHeader(VALID_IP);
                 request.param.withArgs('messageId').returns(messageId);
                 request.param.withArgs('text').returns(taskContent);
             });
@@ -135,12 +121,28 @@ describe('nexmo', function() {
                 assert.equal(response, checkvist.pushTasks.getCall(0).args[1]);
             });
 
-            it ('should return a 404 for non-authorised IP address', function() {
-                request.header.withArgs('X-Forwarded-For').returns(INVALID_IP);
-                callEndpoint(request, response);
+            it ('should respond if last IP in the forward chain is whitelisted', function() {
+                stubForwardedForHeader(INVALID_IP + ', ' + VALID_IP);
+                var result = act();
+                assert(result);
+            });
+
+            function verifyBlocked() {
                 assert(checkvist.pushTasks.notCalled);
                 assert(response.send.calledOnce);
                 assert.equal(404, response.send.getCall(0).args[1]);
+            }
+
+            it ('should return a 404 for non-authorised IP address', function() {
+                stubForwardedForHeader(INVALID_IP);
+                callEndpoint(request, response);
+                verifyBlocked();
+            });
+
+            it ('should return a 404 if last IP in the forward chain is not whitelisted', function() {
+                stubForwardedForHeader(VALID_IP + ', ' + INVALID_IP);
+                callEndpoint(request, response);
+                verifyBlocked();
             });
         });
     });
