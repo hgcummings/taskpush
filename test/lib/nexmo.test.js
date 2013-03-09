@@ -28,6 +28,9 @@ describe('nexmo', function() {
             return spyApp;
         }
 
+        var VALID_IP = '174.36.197.200';
+        var INVALID_IP = '173.194.70.102';
+
         describe('HEAD handler', function() {
             var spyApp = configuredApp();
 
@@ -35,18 +38,28 @@ describe('nexmo', function() {
                 assert(spyApp.head.calledOnce);
             });
 
+            function verifyReturnCode(ipAddress, statusCode) {
+                var middleware = spyApp.head.getCall(0).args[1];
+                var handler = spyApp.head.getCall(0).args[2];
+
+                var request = { ip: ipAddress };
+                var response = { send: sinon.spy() };
+                middleware(request, response, function() { handler(request, response) });
+
+                assert(response.send.calledOnce);
+                assert.equal(statusCode, response.send.getCall(0).args[1]);
+            }
+
             it ('should be set up for the correct path', function() {
                 assert.equal(path, spyApp.head.getCall(0).args[0]);
             });
 
             it ('should return an empty HTTP OK response', function() {
-                var handler = spyApp.head.getCall(0).args[1];
+                verifyReturnCode(VALID_IP, 200);
+            });
 
-                var response = { send: sinon.spy() };
-                handler(null, response);
-
-                assert(response.send.calledOnce);
-                assert.equal(200, response.send.getCall(0).args[1]);
+            it ('should return a 404 for non-authorised IP address', function() {
+                verifyReturnCode(INVALID_IP, 404);
             });
         });
 
@@ -57,13 +70,16 @@ describe('nexmo', function() {
             var response;
             var messageId = '12345';
             var taskContent = 'One task\nTwo task';
+            var middleware;
 
             beforeEach(function() {
                 sinon.stub(checkvist, 'pushTasks');
                 spyApp = configuredApp();
                 assert(spyApp.post.calledOnce);
-                handler = spyApp.post.getCall(0).args[1];
+                middleware = spyApp.post.getCall(0).args[1];
+                handler = spyApp.post.getCall(0).args[2];
                 response = { send: sinon.spy() };
+                request.ip = VALID_IP;
                 request.param.withArgs('messageId').returns(messageId);
                 request.param.withArgs('text').returns(taskContent);
             });
@@ -72,8 +88,12 @@ describe('nexmo', function() {
                 checkvist.pushTasks.restore();
             });
 
+            function callEndpoint(request, response) {
+                middleware(request, response, function() { handler(request, response) });
+            }
+
             function act() {
-                handler(request, response);
+                callEndpoint(request, response);
                 assert(checkvist.pushTasks.calledOnce);
                 return checkvist.pushTasks.getCall(0).args[0];
             }
@@ -108,6 +128,14 @@ describe('nexmo', function() {
                 act();
 
                 assert.equal(response, checkvist.pushTasks.getCall(0).args[1]);
+            });
+
+            it ('should return a 404 for non-authorised IP address', function() {
+                request.ip = INVALID_IP;
+                callEndpoint(request, response);
+                assert(checkvist.pushTasks.notCalled);
+                assert(response.send.calledOnce);
+                assert.equal(404, response.send.getCall(0).args[1]);
             });
         });
     });
