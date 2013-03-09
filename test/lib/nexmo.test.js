@@ -9,7 +9,6 @@ var checkvist =
 var nexmo = process.env.USE_INSTRUMENTED ?
     require('../../lib-cov/nexmo/controller.js') : require('../../lib/nexmo/controller.js');
 
-
 describe('nexmo', function() {
     before(function() {
         sinon.stub(console, 'info');
@@ -42,8 +41,9 @@ describe('nexmo', function() {
                 var middleware = spyApp.head.getCall(0).args[1];
                 var handler = spyApp.head.getCall(0).args[2];
 
-                var request = { ip: ipAddress };
+                var request = { header: sinon.stub() };
                 var response = { send: sinon.spy() };
+                request.header.withArgs('X-Forwarded-For').returns(ipAddress);
                 middleware(request, response, function() { handler(request, response) });
 
                 assert(response.send.calledOnce);
@@ -61,12 +61,20 @@ describe('nexmo', function() {
             it ('should return a 404 for non-authorised IP address', function() {
                 verifyReturnCode(INVALID_IP, 404);
             });
+
+            it ('should return an empty HTTP OK response if last IP in chain is whitelisted', function() {
+                verifyReturnCode(INVALID_IP + ', ' + VALID_IP, 200);
+            });
+
+            it ('should return a 404 if last IP in chain is not whitelisted', function() {
+                verifyReturnCode(VALID_IP + ', ' + INVALID_IP, 404);
+            });
         });
 
         describe('POST handler', function() {
             var spyApp;
             var handler;
-            var request = { param: sinon.stub(), body: '' };
+            var request = { param: sinon.stub(), body: '', header: sinon.stub() };
             var response;
             var messageId = '12345';
             var taskContent = 'One task\nTwo task';
@@ -79,7 +87,7 @@ describe('nexmo', function() {
                 middleware = spyApp.post.getCall(0).args[1];
                 handler = spyApp.post.getCall(0).args[2];
                 response = { send: sinon.spy() };
-                request.ip = VALID_IP;
+                request.header.withArgs('X-Forwarded-For').returns(VALID_IP);
                 request.param.withArgs('messageId').returns(messageId);
                 request.param.withArgs('text').returns(taskContent);
             });
@@ -131,7 +139,7 @@ describe('nexmo', function() {
             });
 
             it ('should return a 404 for non-authorised IP address', function() {
-                request.ip = INVALID_IP;
+                request.header.withArgs('X-Forwarded-For').returns(INVALID_IP);
                 callEndpoint(request, response);
                 assert(checkvist.pushTasks.notCalled);
                 assert(response.send.calledOnce);
