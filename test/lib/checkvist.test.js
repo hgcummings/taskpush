@@ -4,11 +4,8 @@ var assert = require('assert');
 var sinon = require('sinon');
 var request = require('request');
 
-var store =
-    process.env.USE_INSTRUMENTED ? require('../../lib-cov/dynamo.js') : require('../../lib/dynamo.js');
-
-var checkvist =
-    process.env.USE_INSTRUMENTED ? require('../../lib-cov/checkvist.js') : require('../../lib/checkvist.js');
+var store = require('../../lib/dynamo.js');
+var checkvist = require('../../lib/checkvist.js');
 
 describe('checkvist', function() {
     var stubSettings;

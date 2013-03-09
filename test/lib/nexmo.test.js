@@ -3,11 +3,8 @@
 var assert = require('assert');
 var sinon = require('sinon');
 
-var checkvist =
-    process.env.USE_INSTRUMENTED ? require('../../lib-cov/checkvist.js') : require('../../lib/checkvist.js');
-
-var nexmo = process.env.USE_INSTRUMENTED ?
-    require('../../lib-cov/nexmo/controller.js') : require('../../lib/nexmo/controller.js');
+var checkvist = require('../../lib/checkvist.js');
+var nexmo = require('../../lib/nexmo/controller.js');
 
 describe('nexmo', function() {
     before(function() {
