@@ -2,6 +2,7 @@
 
 var express = require('express');
 var path = require('path');
+var forceHttps = require('./forceHttps.js');
 
 var server;
 
@@ -10,6 +11,7 @@ exports.TEST_PORT = 5000;
 exports.start = function(callback) {
     var app = express();
 
+    app.use(forceHttps);
     app.use(express.bodyParser());
     app.use(express.static(path.resolve(__dirname + '/../client')));
 
