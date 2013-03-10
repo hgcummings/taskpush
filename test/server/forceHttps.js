@@ -14,6 +14,13 @@ describe('forceHttps', function() {
         response = { send: sinon.spy(), setHeader: sinon.spy() };
     });
 
+    function MockRequest(host, secure) {
+        this.host = host;
+        this.secure = secure;
+        this.header = sinon.stub();
+        this.header.withArgs('X-Forwarded-Proto').returns(secure ? 'https' : 'http');
+    }
+
     function verifyHasNoEffect() {
         assert(spyNext.calledOnce);
         assert(response.send.notCalled);
@@ -21,13 +28,13 @@ describe('forceHttps', function() {
     }
 
     it('should have no effect on localhost', function() {
-        var request = { host: 'localhost', protocol: 'http', secure: false };
+        var request = new MockRequest('localhost', false);
         forceHttps(request, response, spyNext);
         verifyHasNoEffect();
     });
 
     it('should have no effect on secure requests', function() {
-        var request = { host: 'test.example.com', protocol: 'https', secure: true };
+        var request = new MockRequest('test.example.com', true);
         forceHttps(request, response, spyNext);
         verifyHasNoEffect();
     });
@@ -37,7 +44,8 @@ describe('forceHttps', function() {
         var oldRootUrl = process.env.ROOT_URL;
         process.env.ROOT_URL = secureRootUrl;
         var dummyUrl = '/route/';
-        var request = { host: 'test.example.com', protocol: 'http', secure: false, url: dummyUrl };
+        var request = new MockRequest('test.example.com', false);
+        request.url = dummyUrl;
 
         forceHttps(request, response, spyNext);
 
