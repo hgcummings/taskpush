@@ -3,8 +3,8 @@
 var assert = require('assert');
 var sinon = require('sinon');
 
-var checkvist = require('../../lib/checkvist.js');
-var nexmo = require('../../lib/nexmo/controller.js');
+var checkvist = require('../../../server/lib/checkvist.js');
+var nexmo = require('../../../server/lib/nexmo/controller.js');
 
 describe('nexmo', function() {
     before(function() {

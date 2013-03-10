@@ -13,7 +13,7 @@ describe('dynamo', function() {
         var ddbConstructorStub = sinon.stub(aws, 'DynamoDB');
         ddbConstructorStub.returns({ client: stubClient });
 
-        var requirePath = '../../lib/dynamo.js';
+        var requirePath = '../../../server/lib/dynamo.js';
         delete(require.cache[require.resolve(requirePath)]);
         dynamo = require(requirePath);
     });

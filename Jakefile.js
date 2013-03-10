@@ -28,9 +28,8 @@ task('lint', function() {
     var fileList = new jake.FileList();
 
     fileList.include('Jakefile.js');
-    fileList.include('lib/**/*.js');
+    fileList.include('server/**/*.js');
     fileList.include('test/**/*.js');
-    fileList.include('web.js');
 
     var options = {
         bitwise: true,
@@ -61,6 +60,7 @@ task('lint', function() {
         'Buffer': false,
         'process': false,
         'console': false,
+        '__dirname': false,
         /* require */
         'require': false,
         'module': false,

@@ -4,8 +4,8 @@ var assert = require('assert');
 var sinon = require('sinon');
 var request = require('request');
 
-var store = require('../../lib/dynamo.js');
-var checkvist = require('../../lib/checkvist.js');
+var store = require('../../../server/lib/dynamo.js');
+var checkvist = require('../../../server/lib/checkvist.js');
 
 describe('checkvist', function() {
     var stubSettings;

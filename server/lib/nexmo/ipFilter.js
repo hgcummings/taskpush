@@ -12,7 +12,7 @@ function checkIp(request, response, next) {
     if (whitelist.contains(lastForwardedIp)) {
         next();
     } else {
-        console.log('Blocked request from: ' + lastForwardedIp);
+        console.info('Blocked request from: ' + lastForwardedIp);
         response.send('', 404);
     }
 }
