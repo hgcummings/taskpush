@@ -1,5 +1,0 @@
-  deployment:
-  live:
-    branch: master
-    heroku:
-      appname: taskpush
