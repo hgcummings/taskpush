@@ -6,7 +6,7 @@ function parse(request) {
     return {
         userId: request.param('msisdn'),
         operationId: operationId,
-        tasks: request.param('text')
+        content: request.param('text')
     };
 }
 

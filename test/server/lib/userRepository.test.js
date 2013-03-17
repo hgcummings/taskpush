@@ -5,17 +5,17 @@ var sinon = require('sinon');
 
 var aws = require('aws-sdk');
 
-describe('dynamo', function() {
-    var dynamo;
+describe('userRepository', function() {
+    var userRepository;
     var stubClient = {};
 
     before(function() {
         var ddbConstructorStub = sinon.stub(aws, 'DynamoDB');
         ddbConstructorStub.returns({ client: stubClient });
 
-        var requirePath = '../../../server/lib/dynamo.js';
+        var requirePath = '../../../server/lib/userRepository.js';
         delete(require.cache[require.resolve(requirePath)]);
-        dynamo = require(requirePath);
+        userRepository = require(requirePath);
     });
 
     after(function() {
@@ -43,7 +43,7 @@ describe('dynamo', function() {
             var dummyError = 'Something has gone wrong!';
             stubClient.getItem.callsArgWith(1, dummyError, null);
 
-            dynamo.getSettings('', function(error, settings) {
+            userRepository.getSettings('', function(error, settings) {
                 assert.equal(dummyError, error);
                 assert.equal(null, settings);
             });
@@ -52,7 +52,7 @@ describe('dynamo', function() {
         it('should return settings required for posting a task', function() {
             stubClient.getItem.callsArgWith(1, null, dummyResponse);
 
-            dynamo.getSettings('', function(error, settings) {
+            userRepository.getSettings('', function(error, settings) {
                 assert.equal(null, error);
 
                 assert(settings.checkvist);

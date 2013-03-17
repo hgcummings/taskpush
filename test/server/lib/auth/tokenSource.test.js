@@ -2,21 +2,21 @@
 
 var assert = require('assert');
 
-describe('tokenStore', function() {
+describe('tokenSource', function() {
     var ADJECTIVES = ['honey','sexual'];
     var NOUNS = ['badger','weasel'];
 
-    var tokenRepo;
+    var tokenSource;
 
     var dummyObjects = [{}, {}, {}, {}, {}];
 
     beforeEach(function() {
-        tokenRepo = require('../../../../server/lib/auth/tokenStore.js')(ADJECTIVES, NOUNS);
+        tokenSource = require('../../../../server/lib/auth/tokenSource.js')(ADJECTIVES, NOUNS);
     });
 
     describe('getToken()', function() {
         it('should return an adjective noun token', function(done) {
-            tokenRepo.getToken({}, function(error, token) {
+            tokenSource.getToken({}, function(error, token) {
                 assert.equal(null, error);
                 var words = token.split(' ');
                 assert.equal(2, words.length);
@@ -30,7 +30,7 @@ describe('tokenStore', function() {
             var tokens = [];
 
             function verifyUniqueToken(i) {
-                tokenRepo.getToken(dummyObjects[i], function (error, newToken) {
+                tokenSource.getToken(dummyObjects[i], function (error, newToken) {
                     assert.equal(null, error);
 
                     tokens.forEach(function (token) {
@@ -52,7 +52,7 @@ describe('tokenStore', function() {
 
         it('should return an error if unable to find an available token', function(done) {
             function verifyExpectedError() {
-                tokenRepo.getToken(dummyObjects[i], function (error) {
+                tokenSource.getToken(dummyObjects[i], function (error) {
                     if (i < 4) {
                         assert.equal(null, error);
                     } else {
@@ -67,11 +67,14 @@ describe('tokenStore', function() {
             }
         });
 
-        function saturateTokenStore(callback) {
+    });
+
+    describe('releaseToken()', function() {
+        function saturateTokenSource(callback) {
             var tokens = [];
 
             function getAndStoreToken(i) {
-                tokenRepo.getToken(dummyObjects[i], function (error, newToken) {
+                tokenSource.getToken(dummyObjects[i], function (error, newToken) {
                     assert.equal(null, error);
                     tokens[i] = newToken;
 
@@ -86,25 +89,44 @@ describe('tokenStore', function() {
             }
         }
 
-        it('releasing a token allows it to be re-used', function() {
-            saturateTokenStore(function(tokens) {
+        it('should allow the token to be re-used if the correct owning object is passed in', function() {
+            saturateTokenSource(function(tokens) {
                 var tokenToRelease = tokens[0];
-                tokenRepo.releaseToken(tokenToRelease, dummyObjects[0]);
-                tokenRepo.getToken({}, function(error, newToken) {
+                tokenSource.releaseToken(tokenToRelease, dummyObjects[0]);
+                tokenSource.getToken({}, function(error, newToken) {
                     assert.equal(null, error);
                     assert.equal(tokenToRelease, newToken);
                 });
             });
         });
 
-        it('releasing a token without passing in the correct owning object has no effect', function() {
-            saturateTokenStore(function(tokens) {
-                tokenRepo.releaseToken(tokens[0], dummyObjects[1]);
-                tokenRepo.getToken({}, function(error, newToken) {
+        it('should have no effect if the incorrect owning object is passed in', function() {
+            saturateTokenSource(function(tokens) {
+                tokenSource.releaseToken(tokens[0], dummyObjects[1]);
+                tokenSource.getToken({}, function(error, newToken) {
                     assert(error);
                     assert.equal(null, newToken);
                 });
             });
+        });
+    });
+
+    describe('getObjectForToken', function() {
+        it('should return the object assigned to the specified token', function() {
+            var assignedToken;
+            tokenSource.getToken(dummyObjects[0], function(error, token) {
+                assignedToken = token;
+            });
+
+            assert.equal(dummyObjects[0], tokenSource.getObjectForToken(assignedToken));
+        });
+
+        it('should return undefined for an unrecognised token', function() {
+            tokenSource.getToken(dummyObjects[0], function() {});
+
+            var result = tokenSource.getObjectForToken('pink panther');
+
+            assert.equal('undefined', typeof result);
         });
     });
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 var request = require('request');
-var store = require('./dynamo.js');
+var store = require('./userRepository.js');
 
 function pushTasks(message, response) {
     store.getSettings(message.userId, function (error, userSettings) {

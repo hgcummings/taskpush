@@ -15,10 +15,14 @@ exports.start = function(callback) {
     app.use(express.bodyParser());
     app.use(express.static(path.resolve(__dirname + '/../client')));
 
-    require('./lib/nexmo/controller.js')(app, '/nexmo/');
-
     var port = process.env.PORT || exports.TEST_PORT;
     server = app.listen(port, callback);
+
+    var words = require('./lib/auth/words.js');
+    var tokenSource = require('./lib/auth/tokenSource.js')(words.ADJECTIVES, words.NOUNS);
+
+    require('./lib/nexmo/controller.js')(app, '/nexmo/', tokenSource);
+    require('./lib/auth/controller.js')(server, tokenSource);
 };
 
 exports.stop = function(callback) {

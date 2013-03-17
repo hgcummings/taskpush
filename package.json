@@ -5,14 +5,16 @@
     "express": "3.x",
     "request": "2.14.x",
     "aws-sdk": "x",
-    "netmask": "0.0.x"
+    "netmask": "0.0.x",
+    "socket.io": "0.9.x"
   },
   "devDependencies": {
     "mocha": "1.8.x",
     "sinon": "1.6.x",
     "istanbul": "0.1.x",
     "jake": "0.5.x",
-    "jshint": "1.1.x"
+    "jshint": "1.1.x",
+    "amdefine": "0.0.4"
   },
   "engines": {
     "node": "0.8.x",

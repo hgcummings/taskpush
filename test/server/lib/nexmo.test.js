@@ -20,7 +20,8 @@ describe('nexmo', function() {
 
         function configuredApp() {
             var spyApp = { head: sinon.spy(), post: sinon.spy() };
-            nexmo(spyApp, path);
+            var spyTokenSource = { getObjectForToken: sinon.spy(), checkToken: sinon.spy() };
+            nexmo(spyApp, path, spyTokenSource);
             return spyApp;
         }
 
@@ -80,7 +81,7 @@ describe('nexmo', function() {
             });
 
             function callEndpoint(request, response) {
-                middleware(request, response, function() { handler(request, response); });
+                middleware[0](request, response, function() { handler(request, response); });
             }
 
             function act() {

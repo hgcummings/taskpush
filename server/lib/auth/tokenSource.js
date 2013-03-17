@@ -6,7 +6,7 @@ function getRandomElement(array) {
     return array[Math.floor((Math.random() * array.length))];
 }
 
-module.exports = function createTokenSource(adjectives, nouns) {
+module.exports = function getTokenSource(adjectives, nouns) {
     var tokenSource = {};
     var assignedTokens = {};
 
@@ -31,7 +31,7 @@ module.exports = function createTokenSource(adjectives, nouns) {
         }
     };
 
-    tokenSource.getObjectAssignedForToken = function(token) {
+    tokenSource.getObjectForToken = function(token) {
         return assignedTokens[token];
     };
 

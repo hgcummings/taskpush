@@ -13,4 +13,10 @@ a#github {
         border: 0;
         text-indent: -9999px;
     }
+
+    #token h4 {
+        background-color: #000;
+        font-family: "Lucida Console", Monaco, monospace;
+        color: #f89406;
+    }
 }

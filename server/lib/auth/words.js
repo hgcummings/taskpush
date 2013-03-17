@@ -247,7 +247,6 @@ exports.NOUNS = [
     'seal',
     'shark',
     'sheep',
-    'shrew',
     'skunk',
     'snail',
     'snake',

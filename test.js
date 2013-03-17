@@ -5,7 +5,8 @@ var jake = require('jake');
 
 var mocha = new Mocha({
     ui: 'bdd',
-    reporter: 'spec'
+    reporter: 'spec',
+    globals: ['define', 'window']
 });
 
 new jake.FileList()

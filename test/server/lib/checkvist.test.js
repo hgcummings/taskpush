@@ -4,7 +4,7 @@ var assert = require('assert');
 var sinon = require('sinon');
 var request = require('request');
 
-var store = require('../../../server/lib/dynamo.js');
+var store = require('../../../server/lib/userRepository.js');
 var checkvist = require('../../../server/lib/checkvist.js');
 
 describe('checkvist', function() {
