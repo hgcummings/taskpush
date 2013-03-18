@@ -1,17 +1,20 @@
 'use strict';
 
 var assert = require('assert');
+var sinon = require('sinon');
 var http = require('http');
 
 var server = require('../../server/server.js');
 
 describe('server', function() {
     before(function() {
+        sinon.stub(console, 'log');
         server.start();
     });
 
     after(function() {
         server.stop();
+        console.log.restore();
     });
 
     function getResponse(route, callback) {

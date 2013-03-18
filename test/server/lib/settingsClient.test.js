@@ -55,7 +55,7 @@ describe('settingsClient', function() {
             var dummyError = {};
             callback(dummyError, null);
 
-            assert(spyChannel.send.withArgs('error', sinon.match.string).calledOnce);
+            assert(spyChannel.send.withArgs('errorMessage', sinon.match.string).calledOnce);
         });
     });
 
@@ -82,7 +82,7 @@ describe('settingsClient', function() {
 
             callback();
 
-            assert(spyChannel.send.withArgs('success', sinon.match.string).calledOnce);
+            assert(spyChannel.send.withArgs('successMessage', sinon.match.string).calledOnce);
         });
 
         it('should send an error message on failure', function() {
@@ -90,7 +90,7 @@ describe('settingsClient', function() {
 
             callback({});
 
-            assert(spyChannel.send.withArgs('error', sinon.match.string).calledOnce);
+            assert(spyChannel.send.withArgs('errorMessage', sinon.match.string).calledOnce);
         });
     });
 });

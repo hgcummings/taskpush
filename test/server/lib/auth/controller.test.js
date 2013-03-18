@@ -81,7 +81,7 @@ describe('auth/controller', function() {
             respondToGetToken(error, null);
 
             assert(mockSocket.emit.calledOnce);
-            assert.equal('error', mockSocket.emit.getCall(0).args[0]);
+            assert.equal('errorMessage', mockSocket.emit.getCall(0).args[0]);
             assert.equal('an error occured', mockSocket.emit.getCall(0).args[1]);
         });
 

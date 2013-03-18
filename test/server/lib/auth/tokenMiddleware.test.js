@@ -10,7 +10,7 @@ describe('tokenMiddleware', function() {
     var dummyRequest = {};
     var spyResponse;
     var tokenFilter;
-    var dummyMessage = { userId: '447890123456', content: 'shaving yak' };
+    var dummyMessage = {};
     var spyNext;
 
     before(function() {
@@ -19,6 +19,8 @@ describe('tokenMiddleware', function() {
     });
 
     beforeEach(function() {
+        dummyMessage.userId = '447890123456';
+        dummyMessage.content = 'shaving yak';
         spyResponse = { send: sinon.spy(), next: sinon.spy() };
         spyNext = sinon.spy();
     });
@@ -50,6 +52,18 @@ describe('tokenMiddleware', function() {
         it('should not delegate to the next handler', function(){
             assert(!spyNext.called);
         });
+    });
+
+    it('should strip extraneous whitespace from the token text', function() {
+        dummyMessage.content = ' spacey sparrow ';
+        tokenFilter(dummyRequest, spyResponse, spyNext);
+        assert(stubTokenSource.getObjectForToken.withArgs('spacey sparrow').calledOnce);
+    });
+
+    it('should put the token text into lower case', function() {
+        dummyMessage.content = 'cAsEy CaMeL';
+        tokenFilter(dummyRequest, spyResponse, spyNext);
+        assert(stubTokenSource.getObjectForToken.withArgs('casey camel').calledOnce);
     });
 
     it('should pass through requests that do not match a valid token', function() {

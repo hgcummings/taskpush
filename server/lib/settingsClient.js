@@ -15,7 +15,7 @@ exports.createClient = function createClient(channel) {
 
         userRepository.getSettings(userId, function(error, data) {
             if (error) {
-                channel.send('error', 'Error retrieving settings');
+                channel.send('errorMessage', 'Error retrieving settings');
             } else {
                 channel.send('userId', userId);
                 channel.send('settings', data);
@@ -26,13 +26,13 @@ exports.createClient = function createClient(channel) {
     client.saveSettings = function saveSettings(settings) {
         if (!client.userId) {
             console.error('Attempt to save settings without userId');
-            channel.send('error', 'Error saving settings');
+            channel.send('errorMessage', 'Error saving settings');
         } else {
             userRepository.saveSettings(client.userId, settings, function(error) {
                 if (error) {
-                    channel.send('error', 'Error saving settings');
+                    channel.send('errorMessage', 'Error saving settings');
                 } else {
-                    channel.send('success', 'Settings saved successfully');
+                    channel.send('successMessage', 'Settings saved successfully');
                 }
             });
         }

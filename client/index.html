@@ -33,7 +33,7 @@
                 * Note that the USA number is not reachable internationally.
             </p>
         </div>
-        <div class="well span6" style="display: none" data-bind="visible: loaded">
+        <div class="well span6" style="display: none" data-bind="visible: loaded && !fatal()">
             <h3>Settings</h3>
             <button id="login" class="btn btn-large btn-primary" data-bind="click: initialise, visible: !started()">
                 Log in/Sign up
@@ -67,7 +67,7 @@
                         <div class="controls"><input data-bind="value: checkvist.listId" type="text" name="apiKey" id="taskList"/></div>
                     </div>
                 </div>
-                <div class="form-actions">
+                <div class="form-actions" data-bind="visible: phoneNumber() && settings()">
                     <button type="button" class="btn" data-bind="click: cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary" data-bind="click: saveSettings">Save changes</button>
                 </div>

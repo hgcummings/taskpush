@@ -12,7 +12,7 @@ function configure(server, tokenSource) {
 
         tokenSource.getToken(client, function(error, token) {
             if (error) {
-                socket.emit('error', error.message);
+                socket.emit('errorMessage', error.message);
             } else {
                 socket.on('disconnect', function() {
                     tokenSource.releaseToken(token, client);

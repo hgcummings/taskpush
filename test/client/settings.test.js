@@ -9,11 +9,13 @@ describe('settings', function () {
 
     var mockKo;
     var mockIo;
-    var socket;
+    var mockSocket;
 
     var settingsModule;
 
     before(function() {
+
+        sinon.stub(console, 'info');
         global.define = sinon.spy();
         require('../../client/scripts/settings.js');
         settingsModule = global.define.getCall(0).args[1];
@@ -21,6 +23,7 @@ describe('settings', function () {
 
     after(function() {
         delete global.define;
+        console.info.restore();
     });
 
     beforeEach(function () {
@@ -43,9 +46,14 @@ describe('settings', function () {
             }
         };
 
-        socket = { on: sinon.spy(), emit: sinon.spy() };
+        mockSocket = {
+            on: sinon.spy(),
+            emit: sinon.spy(),
+            disconnect: sinon.spy(),
+            socket: { reconnect: sinon.spy() }
+        };
         mockIo = { connect: sinon.stub() };
-        mockIo.connect.returns(socket);
+        mockIo.connect.returns(mockSocket);
 
         settings = settingsModule(mockKo, mockIo);
         settings.init();
@@ -81,7 +89,7 @@ describe('settings', function () {
             });
 
             it('should setup a callback for receiving a token', function() {
-                var callback = socket.on.withArgs('token').getCall(0).args[1];
+                var callback = mockSocket.on.withArgs('token').getCall(0).args[1];
                 var dummyToken = 'sexual weasel';
                 callback(dummyToken);
                 assert.equal(false, viewModel.loadingToken());
@@ -89,7 +97,7 @@ describe('settings', function () {
             });
 
             it('should setup a callback for receiving a userId', function() {
-                var callback = socket.on.withArgs('userId').getCall(0).args[1];
+                var callback = mockSocket.on.withArgs('userId').getCall(0).args[1];
                 var dummyUserId = '447897123456';
                 callback(dummyUserId);
                 assert.equal(null, viewModel.token());
@@ -97,24 +105,64 @@ describe('settings', function () {
             });
 
             it('should setup a callback for receiving a userId', function() {
-                var callback = socket.on.withArgs('settings').getCall(0).args[1];
+                var callback = mockSocket.on.withArgs('settings').getCall(0).args[1];
                 var dummySettings = {};
                 callback(dummySettings);
                 assert.equal(dummySettings, viewModel.settings());
             });
 
             it('should setup a callback for receiving an error message', function() {
-                var callback = socket.on.withArgs('error').getCall(0).args[1];
+                var callback = mockSocket.on.withArgs('errorMessage').getCall(0).args[1];
                 var dummyMessage = 'Error!';
                 callback(dummyMessage);
                 assert.equal(dummyMessage, viewModel.errorMessage());
             });
 
             it('should setup a callback for receiving a success message', function() {
-                var callback = socket.on.withArgs('success').getCall(0).args[1];
+                var callback = mockSocket.on.withArgs('successMessage').getCall(0).args[1];
                 var dummyMessage = 'Success!';
                 callback(dummyMessage);
                 assert.equal(dummyMessage, viewModel.successMessage());
+            });
+
+            it('should setup a callback for handling connection failure', function() {
+                var callback = mockSocket.on.withArgs('connect_failed').getCall(0).args[1];
+                callback();
+                assert(viewModel.fatal());
+            });
+
+            it('should setup a callback for handling reconnection failure', function() {
+                var callback = mockSocket.on.withArgs('reconnect_failed').getCall(0).args[1];
+                callback();
+                assert(viewModel.fatal());
+            });
+
+            function testClearData(event) {
+                viewModel.settings({});
+                viewModel.phoneNumber('447890123456');
+                viewModel.token('dirty duck');
+
+                var callback = mockSocket.on.withArgs(event).getCall(0).args[1];
+                callback();
+
+                assert(!viewModel.settings());
+                assert(!viewModel.phoneNumber());
+                assert(!viewModel.token());
+            }
+
+            it('should setup a callback to clear data on reconnect', function() {
+                testClearData('reconnect');
+            });
+
+            it('should setup a callback to silently clear data on disconnect voluntarily', function() {
+                viewModel.cancel();
+                testClearData('disconnect');
+                assert(!viewModel.errorMessage());
+            });
+
+            it('should setup a callback to show error when disconnected involuntarily', function() {
+                testClearData('disconnect');
+                assert(viewModel.errorMessage());
             });
         });
 
@@ -127,18 +175,23 @@ describe('settings', function () {
 
                 viewModel.saveSettings();
 
-                assert(socket.emit.withArgs('settings', dummySettings).calledOnce);
+                assert(mockSocket.emit.withArgs('settings', dummySettings).calledOnce);
             });
         });
 
         describe('cancel', function() {
-            it('should reload the page', function() {
-                global.window = { location: { reload: sinon.spy() } };
-
+            it('should disconnect from the socket', function() {
+                viewModel.initialise();
                 viewModel.cancel();
 
-                assert(global.window.location.reload.calledOnce);
-                delete global.window;
+                assert(mockSocket.disconnect.calledOnce);
+            });
+
+            it('should cause the next connect to be a reconnect', function() {
+                viewModel.initialise();
+                viewModel.cancel();
+                viewModel.initialise();
+                assert(mockSocket.socket.reconnect.calledOnce);
             });
         });
     });
