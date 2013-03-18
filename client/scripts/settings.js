@@ -93,10 +93,6 @@ define(['knockout', 'socket.io'], function(ko, io) {
             socket.on('reconnect_failed', function() {
                 fatal();
             });
-
-            socket.on('error', function () {
-                fatal();
-            });
         };
 
         self.saveSettings = function() {

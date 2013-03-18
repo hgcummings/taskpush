@@ -139,12 +139,6 @@ describe('settings', function () {
                 assert(viewModel.fatal());
             });
 
-            it('should setup a callback for handling unrecognised errors', function() {
-                var callback = mockSocket.on.withArgs('error').getCall(0).args[1];
-                callback();
-                assert(viewModel.fatal());
-            });
-
             function testClearData(event) {
                 viewModel.settings({});
                 viewModel.phoneNumber('447890123456');
