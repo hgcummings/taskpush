@@ -14,7 +14,6 @@ describe('settings', function () {
     var settingsModule;
 
     before(function() {
-
         sinon.stub(console, 'info');
         global.define = sinon.spy();
         require('../../client/scripts/settings.js');
@@ -23,6 +22,7 @@ describe('settings', function () {
 
     after(function() {
         delete global.define;
+        delete global.window;
         console.info.restore();
     });
 
@@ -59,6 +59,8 @@ describe('settings', function () {
         settings.init();
         assert(mockKo.applyBindings.calledOnce);
         viewModel = mockKo.applyBindings.getCall(0).args[0];
+
+        global.window = { addEventListener: sinon.spy() };
     });
 
     describe('init', function () {
@@ -137,6 +139,12 @@ describe('settings', function () {
                 assert(viewModel.fatal());
             });
 
+            it('should setup a callback for handling unrecognised errors', function() {
+                var callback = mockSocket.on.withArgs('error').getCall(0).args[1];
+                callback();
+                assert(viewModel.fatal());
+            });
+
             function testClearData(event) {
                 viewModel.settings({});
                 viewModel.phoneNumber('447890123456');
@@ -163,6 +171,16 @@ describe('settings', function () {
             it('should setup a callback to show error when disconnected involuntarily', function() {
                 testClearData('disconnect');
                 assert(viewModel.errorMessage());
+            });
+
+            it('should register a handler to disconnect when the browser window is closed', function() {
+                var expectedCall = global.window.addEventListener.withArgs('beforeUnload', sinon.match.func);
+                assert(expectedCall.calledOnce);
+
+                var callback = expectedCall.getCall(0).args[1];
+                callback();
+
+                assert(mockSocket.disconnect.calledOnce);
             });
         });
 

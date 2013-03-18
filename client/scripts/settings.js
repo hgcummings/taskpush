@@ -35,7 +35,12 @@ define(['knockout', 'socket.io'], function(ko, io) {
             if (socket) {
                 socket.socket.reconnect();
             } else {
-                socket = io.connect('');
+                socket = io.connect('', {
+                    'sync disconnect on unload': false
+                });
+                window.addEventListener('beforeUnload', function() {
+                    self.cancel();
+                });
             }
 
             socket.on('token', function (data) {
@@ -86,6 +91,10 @@ define(['knockout', 'socket.io'], function(ko, io) {
             });
 
             socket.on('reconnect_failed', function() {
+                fatal();
+            });
+
+            socket.on('error', function () {
                 fatal();
             });
         };
