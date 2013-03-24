@@ -2,6 +2,7 @@
 
 var sinon = require('sinon');
 var assert = require('assert');
+var helpers = require('./helpers.js');
 
 describe('settings', function () {
     var settings;
@@ -27,23 +28,9 @@ describe('settings', function () {
     });
 
     beforeEach(function () {
-        mockKo = {
-            applyBindings: sinon.spy(),
-            observable: function (init) {
-                var currentValue = init;
-
-                function obs() {
-                    if (arguments.length > 0) {
-                        currentValue = arguments[0];
-                        return obs;
-                    } else {
-                        return currentValue;
-                    }
-                }
-
-                obs.initialValue = init;
-                return obs;
-            }
+        var dummyMapping = {
+            toJS: function(data) { return data; },
+            fromJS: function(data) { return data; }
         };
 
         mockSocket = {
@@ -55,7 +42,9 @@ describe('settings', function () {
         mockIo = { connect: sinon.stub() };
         mockIo.connect.returns(mockSocket);
 
-        settings = settingsModule(mockKo, mockIo);
+        mockKo = helpers.createMockKo();
+
+        settings = settingsModule(mockKo, mockIo, dummyMapping);
         settings.init();
         assert(mockKo.applyBindings.calledOnce);
         viewModel = mockKo.applyBindings.getCall(0).args[0];

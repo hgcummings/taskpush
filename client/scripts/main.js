@@ -4,11 +4,19 @@
     requirejs.config({
         paths: {
             'knockout' : '//ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1',
+            'koMapping'  : '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping',
+            'bootstrap': '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min',
             'socket.io': '/socket.io/socket.io'
         }
     });
 
-    require(['settings'], function(settings) {
+    require(['settings', 'checkvist'], function(settings) {
         settings.init();
+    });
+
+    require(['jquery', 'settings', 'bootstrap'], function($, settings) {
+        settings.viewModel.settings.subscribe(function() {
+            $('.icon-question-sign').popover({ delay: { show: 0, hide: 1000 } });
+        });
     });
 }());

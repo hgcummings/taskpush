@@ -1,4 +1,4 @@
-define(['knockout', 'socket.io'], function(ko, io) {
+define(['knockout', 'socket.io', 'koMapping'], function(ko, io, map) {
     'use strict';
 
     var ViewModel = function() {
@@ -20,9 +20,11 @@ define(['knockout', 'socket.io'], function(ko, io) {
             self.settings(undefined);
             self.phoneNumber(undefined);
             self.token(undefined);
+            self.errorMessage(undefined);
+            self.successMessage(undefined);
         }
 
-        self.cancel = function() {
+        self.cancel = function () {
             clearData();
             self.started(false);
             socket.disconnect();
@@ -56,7 +58,7 @@ define(['knockout', 'socket.io'], function(ko, io) {
             });
 
             socket.on('settings', function (data) {
-                self.settings(data);
+                self.settings(map.fromJS(data));
             });
 
             socket.on('errorMessage', function(data) {
@@ -96,13 +98,15 @@ define(['knockout', 'socket.io'], function(ko, io) {
         };
 
         self.saveSettings = function() {
-            socket.emit('settings', self.settings());
+            socket.emit('settings', map.toJS(self.settings()));
         };
     };
 
+    var viewModel = new ViewModel();
+
     return {
+        viewModel: viewModel,
         init: function() {
-            var viewModel = new ViewModel();
             ko.applyBindings(viewModel);
         }
     };

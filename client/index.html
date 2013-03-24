@@ -8,79 +8,85 @@
     <link href="css/application.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <h1>Taskpush v0.1</h1>
-    <p>
-        A service for allowing you to push tasks to your checkvist task list from elsewhere, in particular by text message
-        from a mobile phone.
+    <div class="container">
+        <h1>Taskpush v0.1</h1>
+        <p>
+            A service for allowing you to push tasks to your checkvist task list from elsewhere, in particular by text message
+            from a mobile phone.
 
-        <a id="github" href="https://github.com/hgcummings/taskpush">
-            Project on GitHub
-        </a>
-    </p>
-    <div class="row">
-        <div class="well span5">
-            <h3>Phone Numbers</h3>
-            <h5>You can send tasks as a text message to the following numbers:</h5>
-            <dl>
-                <dt>United States*</dt><dd>510-900-3060</dd>
-                <dt>UK &amp; International</dt><dd>+44 793 794 7956</dd>
-            </dl>
-            <p>
-                These are standard rate numbers and normal carrier charges will apply.
-            </p>
-            <p>
-                * Note that the USA number is not reachable internationally.
-            </p>
-        </div>
-        <div class="well span6" style="display: none" data-bind="visible: loaded">
-            <h3>Settings</h3>
-            <div data-bind="visible: !fatal()">
-                <button id="login" class="btn btn-large btn-primary" data-bind="click: initialise, visible: !started()">
-                    Log in/Sign up
-                </button>
-                <div id="token" data-bind="if: loadingToken() || token()">
-                    <p>To log in, send the following as a text message to one of our numbers:</p>
-                    <h4 class="well well-large lead">
-                        <i class="icon-spinner icon-spin icon-2x pull-left" data-bind="visible: loadingToken()"></i>
-                        <br data-bind="visible: loadingToken()">
-                        <span data-bind="text: token()"></span>
-                    </h4>
-                </div>
-                <form class="form-horizontal" id="settings" data-bind="visible: phoneNumber()">
-                    <div class="control-group">
-                        <label for="phoneNumber" class="control-label">Phone number:</label>
-                        <div class="controls">
-                            <span id="phoneNumber" class="uneditable-input" data-bind="text: phoneNumber()" />
-                        </div>
-                    </div>
-                    <div data-bind="with: settings()">
-                        <div class="control-group">
-                            <label for="username" class="control-label">Checkvist username:</label>
-                            <div class="controls"><input data-bind="value: checkvist.username" type="text" name="username" id="username"/></div>
-                        </div>
-                        <div class="control-group">
-                            <label for="apiKey" class="control-label">Checkvist API key:</label>
-                            <div class="controls"><input data-bind="value: checkvist.apiKey" type="text" name="apiKey" id="apiKey"/></div>
-                        </div>
-                        <div class="control-group">
-                            <label for="taskList" class="control-label">List (ID) for new tasks:</label>
-                            <div class="controls"><input data-bind="value: checkvist.listId" type="text" name="apiKey" id="taskList"/></div>
-                        </div>
-                    </div>
-                    <div class="form-actions" data-bind="visible: phoneNumber() && settings()">
-                        <button type="button" class="btn" data-bind="click: cancel">Cancel</button>
-                        <button type="submit" class="btn btn-primary" data-bind="click: saveSettings">Save changes</button>
-                    </div>
-                </form>
+            <a id="github" href="https://github.com/hgcummings/taskpush">
+                Project on GitHub
+            </a>
+        </p>
+        <div class="row">
+            <div class="well span5">
+                <h3>Phone Numbers</h3>
+                <h5>You can send tasks as a text message to the following numbers:</h5>
+                <dl>
+                    <dt>United States*</dt><dd>510-900-3060</dd>
+                    <dt>UK &amp; International</dt><dd>+44 793 794 7956</dd>
+                </dl>
+                <p>
+                    These are standard rate numbers and normal carrier charges will apply.
+                </p>
+                <p>
+                    * Note that the USA number is not reachable internationally.
+                </p>
             </div>
-            <div class="alert alert-error" data-bind="visible: errorMessage(), text:errorMessage()"></div>
-            <div class="alert alert-success" data-bind="visible: successMessage(), text:successMessage()"></div>
+            <div class="well span6" style="display: none" data-bind="visible: loaded">
+                <h3>Settings</h3>
+                <div data-bind="visible: !fatal()">
+                    <button id="login" class="btn btn-large btn-primary" data-bind="click: initialise, visible: !started()">
+                        Log in/Sign up
+                    </button>
+                    <div id="token" data-bind="if: loadingToken() || token()">
+                        <p>To log in, send the following as a text message to one of our numbers:</p>
+                        <h4 class="well well-large lead">
+                            <i class="icon-spinner icon-spin icon-2x pull-left" data-bind="visible: loadingToken()"></i>
+                            <br data-bind="visible: loadingToken()">
+                            <span data-bind="text: token()"></span>
+                        </h4>
+                    </div>
+                    <form class="form-horizontal" id="settings" data-bind="visible: phoneNumber()">
+                        <div class="control-group">
+                            <label for="phoneNumber" class="control-label">Phone number:</label>
+                            <div class="controls">
+                                <span id="phoneNumber" class="uneditable-input" data-bind="text: phoneNumber()" />
+                            </div>
+                        </div>
+                        <div data-bind="with: settings">
+                            <div class="control-group">
+                                <label for="username" class="control-label">Checkvist username:</label>
+                                <div class="controls"><input data-bind="value: checkvist.username" type="text" name="username" id="username"/></div>
+                            </div>
+                            <div class="control-group">
+                                <label for="apiKey" class="control-label">Checkvist API key:</label>
+                                <div class="controls">
+                                    <input data-bind="value: checkvist.apiKey" type="text" name="apiKey" id="apiKey"/>
+                                    <i class="icon-question-sign"
+                                       data-html="true"
+                                       data-trigger="hover"
+                                       data-title="API key"
+                                       data-content="You can find this on your <a href='https://checkvist.com/auth/profile' target='_blank'>Checkvist profile page</a> under 'View/update remove OpenAPI key'"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div class="control-group" data-bind="if: $parent.hasCheckvist()">
+                                <label for="taskList" class="control-label">List for new tasks:</label>
+                                <div class="controls"><select data-bind="value: checkvist.listId, options: checkvist.lists, optionsText: 'name', optionsValue: 'id'" name="taskList" id="taskList"></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions" data-bind="visible: phoneNumber() && settings()">
+                            <button type="button" class="btn" data-bind="click: cancel">Cancel</button>
+                            <button type="submit" class="btn btn-primary" data-bind="visible: hasCheckvist(), click: saveSettings">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="alert alert-error" data-bind="visible: errorMessage(), text:errorMessage()"></div>
+                <div class="alert alert-success" data-bind="visible: successMessage(), text:successMessage()"></div>
+            </div>
         </div>
     </div>
-</div>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" data-main="scripts/main" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.4/require.min.js"></script>
+    <script type="text/javascript" data-main="scripts/main" src="//cdnjs.cloudflare.com/ajax/libs/require-jquery/0.25.0/require-jquery.min.js"></script>
 </body>
 </html>

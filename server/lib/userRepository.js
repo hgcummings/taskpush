@@ -44,7 +44,7 @@ function saveSettings(userId, settings, callback) {
                 'userId': { 'N': userId },
                 'username': { 'S': settings.checkvist.username },
                 'apiKey': { 'S': settings.checkvist.apiKey },
-                'listId': { 'S': settings.checkvist.listId }
+                'listId': { 'S': settings.checkvist.listId.toString() }
             }
         },
         callback
