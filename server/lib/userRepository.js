@@ -37,13 +37,20 @@ function getSettings(userId, callback) {
 }
 
 function saveSettings(userId, settings, callback) {
+    if (!(userId && settings && settings.checkvist &&
+        settings.checkvist.username &&
+        settings.checkvist.apiKey &&
+        settings.checkvist.listId)) {
+        return callback('Invalid data');
+    }
+
     dynamoDb.client.putItem(
         {
             TableName: 'checkvist-users',
             Item: {
                 'userId': { 'N': userId },
-                'username': { 'S': settings.checkvist.username },
-                'apiKey': { 'S': settings.checkvist.apiKey },
+                'username': { 'S': settings.checkvist.username.toString() },
+                'apiKey': { 'S': settings.checkvist.apiKey.toString() },
                 'listId': { 'S': settings.checkvist.listId.toString() }
             }
         },

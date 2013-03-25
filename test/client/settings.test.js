@@ -106,7 +106,7 @@ describe('settings', function () {
                 var callback = mockSocket.on.withArgs('errorMessage').getCall(0).args[1];
                 var dummyMessage = 'Error!';
                 callback(dummyMessage);
-                assert.equal(dummyMessage, viewModel.errorMessage());
+                assert.equal(dummyMessage, viewModel.errorMessages.push.getCall(0).args[0]);
             });
 
             it('should setup a callback for receiving a success message', function() {
@@ -148,12 +148,12 @@ describe('settings', function () {
             it('should setup a callback to silently clear data on disconnect voluntarily', function() {
                 viewModel.cancel();
                 testClearData('disconnect');
-                assert(!viewModel.errorMessage());
+                assert(!viewModel.errorMessages.called);
             });
 
             it('should setup a callback to show error when disconnected involuntarily', function() {
                 testClearData('disconnect');
-                assert(viewModel.errorMessage());
+                assert(viewModel.errorMessages.push.calledOnce);
             });
 
             it('should register a handler to disconnect when the browser window is closed', function() {

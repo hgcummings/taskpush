@@ -15,7 +15,7 @@ describe('nexmo', function() {
         console.info.restore();
     });
 
-    describe('#configure()', function() {
+    describe('configure', function() {
         var path = '/route/';
 
         function configuredApp() {

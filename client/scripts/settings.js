@@ -13,14 +13,14 @@ define(['knockout', 'socket.io', 'koMapping'], function(ko, io, map) {
         self.fatal = ko.observable();
         self.loaded = true;
 
-        self.errorMessage = ko.observable();
+        self.errorMessages = ko.observableArray();
         self.successMessage = ko.observable();
 
         function clearData() {
             self.settings(undefined);
             self.phoneNumber(undefined);
             self.token(undefined);
-            self.errorMessage(undefined);
+            self.errorMessages.removeAll();
             self.successMessage(undefined);
         }
 
@@ -47,7 +47,7 @@ define(['knockout', 'socket.io', 'koMapping'], function(ko, io, map) {
 
             socket.on('token', function (data) {
                 self.started(true);
-                self.errorMessage(undefined);
+                self.errorMessages.removeAll();
                 self.loadingToken(false);
                 self.token(data);
             });
@@ -62,7 +62,7 @@ define(['knockout', 'socket.io', 'koMapping'], function(ko, io, map) {
             });
 
             socket.on('errorMessage', function(data) {
-                self.errorMessage(data);
+                self.errorMessages.push(data);
             });
 
             socket.on('successMessage', function(data) {
@@ -71,21 +71,21 @@ define(['knockout', 'socket.io', 'koMapping'], function(ko, io, map) {
 
             socket.on('reconnect', function() {
                 clearData();
-                self.errorMessage(undefined);
+                self.errorMessages.removeAll();
             });
 
             socket.on('disconnect', function() {
                 clearData();
                 if (self.started()) {
                     self.loadingToken(true);
-                    self.errorMessage('Disconnected from server. Attempting to reconnect...');
+                    self.errorMessages.push('Disconnected from server. Attempting to reconnect...');
                 }
             });
 
             function fatal() {
                 clearData();
                 self.fatal(true);
-                self.errorMessage('Unable to connect to server. Please try again later.');
+                self.errorMessages.push('Unable to connect to server. Please try again later.');
             }
 
             socket.on('connect_failed', function() {

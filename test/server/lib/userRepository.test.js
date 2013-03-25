@@ -22,7 +22,7 @@ describe('userRepository', function() {
         aws.DynamoDB.restore();
     });
 
-    describe('#getSettings(userId)', function() {
+    describe('getSettings', function() {
         var userName = 'test@example.com';
         var apiKey = 'foo';
         var checklistId = 'bar';
@@ -60,6 +60,60 @@ describe('userRepository', function() {
                 assert(settings.checkvist.hasOwnProperty('listId'));
                 assert(settings.checkvist.hasOwnProperty('username'));
             });
+        });
+    });
+
+    describe('saveSettings', function() {
+        function verifySaveSettingsFails(settings, done) {
+            userRepository.saveSettings('447890123456', settings, function(error) {
+                assert(error);
+                assert(stubClient.putItem.notCalled);
+                done();
+            });
+        }
+
+        var validSettings;
+
+        beforeEach(function() {
+            stubClient.putItem = sinon.spy();
+
+            validSettings = {
+                userId: '447817530243',
+                checkvist: {
+                    username: 'test@example.com',
+                    apiKey: 'secret',
+                    listId: 123456
+                }
+            };
+        });
+
+        it ('should persist valid settings', function() {
+            // Technically also a success callback, but the code we're
+            // testing isn't responsible for calling it in that case
+            var errorCallback = sinon.spy();
+            userRepository.saveSettings('447890123456', validSettings, errorCallback);
+            assert(errorCallback.notCalled);
+            assert(stubClient.putItem.calledOnce);
+        });
+
+        it ('should raise an error for settings missing checkvist settings', function(done) {
+            delete validSettings.checkvist;
+            verifySaveSettingsFails(validSettings, done);
+        });
+
+        it ('should raise an error for settings missing username', function(done) {
+            delete validSettings.checkvist.username;
+            verifySaveSettingsFails(validSettings, done);
+        });
+
+        it ('should raise an error for settings missing apiKey', function(done) {
+            delete validSettings.checkvist.apiKey;
+            verifySaveSettingsFails(validSettings, done);
+        });
+
+        it ('should raise an error for settings missing listId', function(done) {
+            delete validSettings.checkvist.listId;
+            verifySaveSettingsFails(validSettings, done);
         });
     });
 });

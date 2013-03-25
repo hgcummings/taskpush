@@ -34,11 +34,11 @@
                 </p>
             </div>
             <div class="well span6" style="display: none" data-bind="visible: loaded">
-                <h3>Settings</h3>
                 <div data-bind="visible: !fatal()">
-                    <button id="login" class="btn btn-large btn-primary" data-bind="click: initialise, visible: !started()">
+                    <button id="login" class="btn btn-large btn-success pull-right" data-bind="click: initialise, visible: !started()">
                         Log in/Sign up
                     </button>
+                    <h3>Account Settings</h3>
                     <div id="token" data-bind="if: loadingToken() || token()">
                         <p>To log in, send the following as a text message to one of our numbers:</p>
                         <h4 class="well well-large lead">
@@ -55,11 +55,11 @@
                             </div>
                         </div>
                         <div data-bind="with: settings">
-                            <div class="control-group">
+                            <div class="control-group" data-bind="css: $parent.checkvist.usernameState">
                                 <label for="username" class="control-label">Checkvist username:</label>
-                                <div class="controls"><input data-bind="value: checkvist.username" type="text" name="username" id="username"/></div>
+                                <div class="controls"><input data-bind="value: checkvist.username" type="text" name="username" id="username"/> <i class="icon-spinner icon-spin" data-bind="visible: $parent.checkvist.loading()"></i></div>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-bind="css: $parent.checkvist.apiKeyState">
                                 <label for="apiKey" class="control-label">Checkvist API key:</label>
                                 <div class="controls">
                                     <input data-bind="value: checkvist.apiKey" type="text" name="apiKey" id="apiKey"/>
@@ -71,18 +71,21 @@
                                     ></i>
                                 </div>
                             </div>
-                            <div class="control-group" data-bind="if: $parent.hasCheckvist()">
+                            <div class="control-group" data-bind="if: $parent.checkvist.loaded()">
                                 <label for="taskList" class="control-label">List for new tasks:</label>
                                 <div class="controls"><select data-bind="value: checkvist.listId, options: checkvist.lists, optionsText: 'name', optionsValue: 'id'" name="taskList" id="taskList"></select></div>
                             </div>
                         </div>
-                        <div class="form-actions" data-bind="visible: phoneNumber() && settings()">
-                            <button type="button" class="btn" data-bind="click: cancel">Cancel</button>
-                            <button type="submit" class="btn btn-primary" data-bind="visible: hasCheckvist(), click: saveSettings">Save changes</button>
+                        <div class="controls-row" data-bind="visible: phoneNumber() && settings()">
+                            <button type="button" class="btn span2" data-bind="click: cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary span3" data-bind="visible: !checkvist.loaded(), click: checkvist.validate">
+                                Continue <i class="icon-spinner icon-spin" data-bind="visible: checkvist.loading()"></i>
+                            </button>
+                            <button type="submit" class="btn btn-success span3" data-bind="visible: checkvist.loaded(), click: saveSettings">Save changes</button>
                         </div>
                     </form>
                 </div>
-                <div class="alert alert-error" data-bind="visible: errorMessage(), text:errorMessage()"></div>
+                <div class="alert alert-error" data-bind="visible: errorMessages().length, text:errorMessages()"></div>
                 <div class="alert alert-success" data-bind="visible: successMessage(), text:successMessage()"></div>
             </div>
         </div>

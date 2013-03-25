@@ -20,6 +20,13 @@ exports.createMockKo = function() {
             obs.subscribe = sinon.spy();
             obs.initialValue = init;
             return obs;
+        },
+        observableArray: function() {
+            return {
+                push: sinon.spy(),
+                remove: sinon.spy(),
+                removeAll: sinon.spy()
+            };
         }
     };
 };

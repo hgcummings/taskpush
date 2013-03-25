@@ -37,7 +37,7 @@ describe('checkvist', function() {
         stubSettings.restore();
     });
 
-    describe('#pushTasks()', function() {
+    describe('pushTasks', function() {
         var response;
         var requestPostStub;
 
