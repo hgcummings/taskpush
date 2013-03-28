@@ -10,13 +10,7 @@
         }
     });
 
-    require(['settings', 'checkvist'], function(settings) {
+    require(['settings', 'checkvist', 'interaction'], function(settings) {
         settings.init();
-    });
-
-    require(['jquery', 'settings', 'bootstrap'], function($, settings) {
-        settings.viewModel.settings.subscribe(function() {
-            $('.icon-question-sign').popover({ delay: { show: 0, hide: 1000 } });
-        });
     });
 }());
