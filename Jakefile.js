@@ -6,7 +6,7 @@ var ISTANBUL = path.resolve('./node_modules/.bin/istanbul');
 var COVERAGE_OPTS = '--lines 95 --statements 90 --branches 90 --functions 90';
 var jshint = require('jshint').JSHINT;
 
-var printOpts = {printStdout: true, printStderr: true};
+var printOpts = {stdout: true, stderr: true};
 
 desc('Run jake test and jake lint');
 task('default', ['lint', 'check-coverage']);
