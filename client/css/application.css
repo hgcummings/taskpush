@@ -24,3 +24,8 @@ a#github {
 select {
     color: #52575c;
 }
+
+.btn.span2.with-dropdown {
+    width: 146px;
+    padding-left: 36px;
+}

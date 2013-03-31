@@ -24,7 +24,7 @@ describe('auth/controller', function() {
             listenSpy = sinon.stub(io, 'listen');
             listenSpy.withArgs(dummyServer).returns(mockIo);
             controller(dummyServer, mockTokenSource);
-            mockClient = { saveSettings: sinon.spy() };
+            mockClient = { saveSettings: sinon.spy(), deleteSettings: sinon.spy() };
             createClientStub = sinon.stub(settingsClient, 'createClient');
             createClientStub.returns(mockClient);
         });
@@ -91,6 +91,15 @@ describe('auth/controller', function() {
             var dummySettings = {};
             callback(dummySettings);
             assert(mockClient.saveSettings.withArgs(dummySettings).calledOnce);
+        });
+
+        it('should setup a callback for deleting settings', function() {
+            respondToGetToken(null, 'honey badger');
+
+            var callback = mockSocket.on.withArgs('delete').getCall(0).args[1];
+
+            callback();
+            assert(mockClient.deleteSettings.calledOnce);
         });
     });
 });

@@ -13,17 +13,20 @@ describe('settingsClient', function() {
     var dummySettings = {};
     var getSettingsStub;
     var saveSettingsStub;
+    var deleteSettingsStub;
 
     beforeEach(function() {
         spyChannel = { send: sinon.spy() };
         client = settingsClient.createClient(spyChannel);
         getSettingsStub = sinon.stub(userRepository, 'getSettings');
         saveSettingsStub = sinon.stub(userRepository, 'saveSettings');
+        deleteSettingsStub = sinon.stub(userRepository, 'deleteSettings');
     });
 
     afterEach(function() {
         getSettingsStub.restore();
         saveSettingsStub.restore();
+        deleteSettingsStub.restore();
     });
 
     describe('setUserId', function() {
@@ -87,6 +90,47 @@ describe('settingsClient', function() {
 
         it('should send an error message on failure', function() {
             var callback = testSaveSettings();
+
+            callback({});
+
+            assert(spyChannel.send.withArgs('errorMessage', sinon.match.string).calledOnce);
+        });
+    });
+
+    describe('deleteSettings', function() {
+        function testDeleteSettings() {
+            client.setUserId(dummyUserId);
+
+            client.deleteSettings();
+
+            var expectedDeleteSettings = deleteSettingsStub.withArgs(dummyUserId, sinon.match.func);
+            assert(expectedDeleteSettings.calledOnce);
+
+            return expectedDeleteSettings.getCall(0).args[1];
+        }
+
+        it('should delete settings saved against the userId', function() {
+            testDeleteSettings();
+        });
+
+        it('should send a success message on a successful deletion', function() {
+            var callback = testDeleteSettings();
+
+            callback();
+
+            assert(spyChannel.send.withArgs('successMessage', sinon.match.string).calledOnce);
+        });
+
+        it('should clear the user ID on a successful deletion', function() {
+            var callback = testDeleteSettings();
+
+            callback();
+
+            assert(spyChannel.send.withArgs('userId', null).calledOnce);
+        });
+
+        it('should send an error message on failure', function() {
+            var callback = testDeleteSettings();
 
             callback({});
 

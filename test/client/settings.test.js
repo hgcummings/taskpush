@@ -180,6 +180,16 @@ describe('settings', function () {
             });
         });
 
+        describe('deleteSettings', function() {
+            it('should delete the users settings', function() {
+                viewModel.initialise();
+
+                viewModel.deleteSettings();
+
+                assert(mockSocket.emit.withArgs('delete').calledOnce);
+            });
+        });
+
         describe('cancel', function() {
             it('should disconnect from the socket', function() {
                 viewModel.initialise();

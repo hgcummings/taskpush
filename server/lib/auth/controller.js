@@ -23,6 +23,10 @@ function configure(server, tokenSource) {
                 socket.on('settings', function(settings) {
                     client.saveSettings(settings);
                 });
+
+                socket.on('delete', function() {
+                    client.deleteSettings();
+                });
             }
         });
     });

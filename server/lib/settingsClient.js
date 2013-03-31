@@ -38,5 +38,21 @@ exports.createClient = function createClient(channel) {
         }
     };
 
+    client.deleteSettings = function deleteSettings() {
+        if (!client.userId) {
+            console.error('Attempt to delete settings without userId');
+            channel.send('errorMessage', 'Error saving settings');
+        } else {
+            userRepository.deleteSettings(client.userId, function(error) {
+                if (error) {
+                    channel.send('errorMessage', 'Error deleting settings');
+                } else {
+                    channel.send('successMessage', 'Settings deleted');
+                    channel.send('userId', null);
+                }
+            });
+        }
+    };
+
     return client;
 };

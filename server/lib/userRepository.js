@@ -58,5 +58,16 @@ function saveSettings(userId, settings, callback) {
     );
 }
 
+function deleteSettings(userId, callback) {
+    dynamoDb.client.deleteItem(
+        {
+            TableName: 'checkvist-users',
+            Key: { HashKeyElement: { 'N': userId } }
+        },
+        callback
+    );
+}
+
 exports.getSettings = getSettings;
 exports.saveSettings = saveSettings;
+exports.deleteSettings = deleteSettings;

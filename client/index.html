@@ -3,7 +3,8 @@
 <head>
     <title>Taskpush</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.0/slate/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/slate/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
     <link href="css/application.css" rel="stylesheet">
 </head>
@@ -24,16 +25,16 @@
                 <h5>You can send tasks as a text message to the following numbers:</h5>
                 <dl>
                     <dt>United States*</dt><dd>510-900-3060</dd>
-                    <dt>UK &amp; International</dt><dd>+44 793 794 7956</dd>
+                    <dt>UK &amp; International</dt><dd>+44 793 794 7510</dd>
                 </dl>
                 <p>
                     These are standard rate numbers and normal carrier charges will apply.
                 </p>
                 <p>
-                    * Note that the USA number is not reachable internationally.
+                    <small>* Note that the USA number is not reachable internationally.</small>
                 </p>
             </div>
-            <div class="well span6" style="display: none" data-bind="visible: loaded">
+            <div class="well span5" style="display: none" data-bind="visible: loaded">
                 <div data-bind="visible: !fatal()">
                     <button id="login" class="btn btn-large btn-success pull-right" data-bind="click: initialise, visible: !started()">
                         Log in/Sign up
@@ -77,17 +78,40 @@
                             </div>
                         </div>
                         <div class="controls-row" data-bind="visible: phoneNumber() && settings()">
-                            <button type="button" class="btn span2" data-bind="click: cancel">Cancel</button>
-                            <button type="button" class="btn btn-primary span3" data-bind="visible: !checkvist.loaded(), click: checkvist.validate">
+                            <div class="btn-group span2">
+                                <button type="button" class="btn btn-inverse span2 with-dropdown" data-bind="click: cancel">Cancel</button>
+                                <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" data-bind="click: cancel"><i class="icon-undo"></i> Abandon unsaved changes</a></li>
+                                    <li><a href="#deletePrompt" data-toggle="modal"><i class="icon-trash"></i> Delete account settings</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-primary span2" data-bind="visible: !checkvist.loaded(), click: checkvist.validate">
                                 Continue <i class="icon-spinner icon-spin" data-bind="visible: checkvist.loading()"></i>
                             </button>
-                            <button type="submit" class="btn btn-success span3" data-bind="visible: checkvist.loaded(), click: saveSettings">Save changes</button>
+                            <button type="submit" class="btn btn-success span2" data-bind="visible: checkvist.loaded(), click: saveSettings">Save changes</button>
                         </div>
                     </form>
                 </div>
                 <div class="alert alert-error" data-bind="visible: errorMessages().length, text:errorMessages()"></div>
                 <div class="alert alert-success" data-bind="visible: successMessage(), text:successMessage()"></div>
             </div>
+        </div>
+    </div>
+    <div id="deletePrompt" class="modal hide fade" aria-labelledby="deletePromptHeader" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header">
+            <a class="pull-right" data-dismiss="modal" aria-hidden="true" href="#"><i class="icon-remove"></i></a>
+            <h3 id="deletePromptHeader">Delete account settings</h3>
+        </div>
+        <div class="modal-body">
+            <p>Your phone number and all data associated with it will be removed from our database.</p>
+            <p>Data stored in Checkvist (e.g. tasks and task lists) will not be affected.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Go back</button>
+            <button class="btn btn-danger" data-dismiss="modal" data-bind="click: deleteSettings">Delete</button>
         </div>
     </div>
     <script type="text/javascript" data-main="scripts/main" src="//cdnjs.cloudflare.com/ajax/libs/require-jquery/0.25.0/require-jquery.min.js"></script>

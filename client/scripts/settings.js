@@ -100,6 +100,10 @@ define(['knockout', 'socket.io', 'koMapping'], function(ko, io, map) {
         self.saveSettings = function() {
             socket.emit('settings', map.toJS(self.settings()));
         };
+
+        self.deleteSettings = function() {
+            socket.emit('delete');
+        };
     };
 
     var viewModel = new ViewModel();

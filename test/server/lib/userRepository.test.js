@@ -116,4 +116,21 @@ describe('userRepository', function() {
             verifySaveSettingsFails(validSettings, done);
         });
     });
+
+    describe('deleteSettings', function() {
+        before(function() {
+            stubClient.deleteItem = sinon.stub();
+        });
+
+        it('should chain errors back to the caller', function(done) {
+            var dummyError = 'Something has gone wrong!';
+            stubClient.deleteItem.callsArgWith(1, dummyError);
+
+            userRepository.deleteSettings('', function(error, deleted) {
+                assert.equal(dummyError, error);
+                assert.equal(null, deleted);
+                done();
+            });
+        });
+    });
 });

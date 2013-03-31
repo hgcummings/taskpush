@@ -47,7 +47,7 @@ define(['jquery', 'knockout', 'settings'], function($, ko, settings) {
                             'remote_key': settings.checkvist.apiKey()
                         },
                         // Note that must specify a timeout when using JSONP, else the error callback will never fire
-                        timeout: 2000,
+                        timeout: 1000,
                         error: function() {
                             if (!isCurrent()) {
                                 return;
@@ -75,7 +75,7 @@ define(['jquery', 'knockout', 'settings'], function($, ko, settings) {
                                 data: {
                                     token: token
                                 },
-                                timeout: 2000,
+                                timeout: 1000,
                                 error: function() {
                                     if (!isCurrent()) {
                                         return;
