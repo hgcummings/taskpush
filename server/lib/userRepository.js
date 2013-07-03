@@ -14,7 +14,7 @@ function getSettings(userId, callback) {
     dynamoDb.client.getItem(
         {
             TableName: 'checkvist-users',
-            Key: { HashKeyElement: { 'N': userId } }
+            Key: { 'userId': { 'N': userId } }
         },
         function(error, data) {
             if (error) {
@@ -62,7 +62,7 @@ function deleteSettings(userId, callback) {
     dynamoDb.client.deleteItem(
         {
             TableName: 'checkvist-users',
-            Key: { HashKeyElement: { 'N': userId } }
+            Key: { 'userId': { 'N': userId } }
         },
         callback
     );
