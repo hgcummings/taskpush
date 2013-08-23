@@ -3,7 +3,7 @@
 var Netmask = require('netmask').Netmask;
 
 // See https://nexmo.zendesk.com/entries/23181071-Source-IP-subnet-for-incoming-traffic-in-REST-API
-var whitelists = [new Netmask('174.36.197.192/28') , new Netmask('119.81.44.13/30')];
+var whitelist = new Netmask('174.36.197.192/28');
 
 function checkIp(request, response, next) {
     // Only look at the last non-local IP in the chain, since this is set by the host router
@@ -20,16 +20,15 @@ function checkIp(request, response, next) {
         lastForwardedIp = forwardChain.pop();
     }
 
-    for (var i = 0; i < whitelists.length; ++i) {
-        if (whitelists[i].contains(lastForwardedIp)) {
-            next();
-            return;
-        }
+    if (whitelist.contains(lastForwardedIp)) {
+        next();
+    } else {
+        console.info('Stopped processing request from non-whitelisted IP: ' + lastForwardedIp +
+            ' (Forward chain:' + request.header('X-Forwarded-For') +')');
+        // Should really return a 404 here, but we need to send back a 200 to nexmo's *web* servers (which aren't on the
+        // same subnet as the whitelisted gateway servers) in order for them to recognise our endpoint as a valid one.
+        response.send('', 200);
     }
-
-    console.info('Blocked request from: ' + lastForwardedIp +
-        ' (Forward chain:' + request.header('X-Forwarded-For') +')');
-    response.send('', 404);
 }
 
 exports.checkIp = checkIp;

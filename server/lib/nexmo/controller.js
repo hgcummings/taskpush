@@ -6,9 +6,9 @@ var ipFilter = require('./ipFilter.js');
 var tokenMiddleware = require('../auth/tokenMiddleware.js');
 
 function configure(app, route, tokenSource) {
-    // Nexmo will only use our URL if we respond to a HEAD request with an HTTP 200
+    // Nexmo will only use our URL if we respond to a GET and POST request with an HTTP 200
     // This can't be filtered by IP as the request comes from Nexmo's web servers, not their SMS gateway
-    app.head(route, function(req, res) {
+    app.get(route, function(req, res) {
         res.send('', 200);
     });
 

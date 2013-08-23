@@ -19,7 +19,7 @@ describe('nexmo', function() {
         var path = '/route/';
 
         function configuredApp() {
-            var spyApp = { head: sinon.spy(), post: sinon.spy() };
+            var spyApp = { get: sinon.spy(), post: sinon.spy() };
             var spyTokenSource = { getObjectForToken: sinon.spy(), checkToken: sinon.spy() };
             nexmo(spyApp, path, spyTokenSource);
             return spyApp;
@@ -29,19 +29,19 @@ describe('nexmo', function() {
         var INVALID_IP = '173.194.70.102';
         var LOCAL_IP = '10.10.2.50';
 
-        describe('HEAD handler', function() {
+        describe('GET handler', function() {
             var spyApp = configuredApp();
 
             before(function() {
-                assert(spyApp.head.calledOnce);
+                assert(spyApp.get.calledOnce);
             });
 
             it ('should be set up for the correct path', function() {
-                assert.equal(path, spyApp.head.getCall(0).args[0]);
+                assert.equal(path, spyApp.get.getCall(0).args[0]);
             });
 
             it ('should return an empty HTTP OK response', function() {
-                var handler = spyApp.head.getCall(0).args[1];
+                var handler = spyApp.get.getCall(0).args[1];
 
                 var request = { header: sinon.stub() };
                 var response = { send: sinon.spy() };
@@ -145,16 +145,17 @@ describe('nexmo', function() {
             function verifyBlocked() {
                 assert(checkvist.pushTasks.notCalled);
                 assert(response.send.calledOnce);
-                assert.equal(404, response.send.getCall(0).args[1]);
+                assert.equal('', response.send.getCall(0).args[0]);
+                assert.equal(200, response.send.getCall(0).args[1]);
             }
 
-            it ('should return a 404 for non-authorised IP address', function() {
+            it ('should return an empty response for non-authorised IP address', function() {
                 stubForwardedForHeader(INVALID_IP);
                 callEndpoint(request, response);
                 verifyBlocked();
             });
 
-            it ('should return a 404 if last IP in the forward chain is not whitelisted', function() {
+            it ('should return an empty response if last IP in the forward chain is not whitelisted', function() {
                 stubForwardedForHeader(VALID_IP + ', ' + INVALID_IP);
                 callEndpoint(request, response);
                 verifyBlocked();
