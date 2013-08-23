@@ -3,7 +3,7 @@
 var Netmask = require('netmask').Netmask;
 
 // See https://nexmo.zendesk.com/entries/23181071-Source-IP-subnet-for-incoming-traffic-in-REST-API
-var whitelist = new Netmask('174.36.197.192/28');
+var whitelists = [new Netmask('174.36.197.192/28') , new Netmask('119.81.44.13/30')];
 
 function checkIp(request, response, next) {
     // Only look at the last non-local IP in the chain, since this is set by the host router
@@ -20,13 +20,16 @@ function checkIp(request, response, next) {
         lastForwardedIp = forwardChain.pop();
     }
 
-    if (whitelist.contains(lastForwardedIp)) {
-        next();
-    } else {
-        console.info('Blocked request from: ' + lastForwardedIp +
-            ' (Forward chain:' + request.header('X-Forwarded-For') +')');
-        response.send('', 404);
+    for (var i = 0; i < whitelists.length; ++i) {
+        if (whitelists[i].contains(lastForwardedIp)) {
+            next();
+            return;
+        }
     }
+
+    console.info('Blocked request from: ' + lastForwardedIp +
+        ' (Forward chain:' + request.header('X-Forwarded-For') +')');
+    response.send('', 404);
 }
 
 exports.checkIp = checkIp;
