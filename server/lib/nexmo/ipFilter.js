@@ -6,13 +6,25 @@ var Netmask = require('netmask').Netmask;
 var whitelist = new Netmask('174.36.197.192/28');
 
 function checkIp(request, response, next) {
-    // Only look at the last IP in the chain, since this is set by the Heroku router
+    // Only look at the last non-local IP in the chain, since this is set by the host router
     // The rest of the chain could come from anywhere (and would be trivial to spoof)
-    var lastForwardedIp = request.header('X-Forwarded-For').split(',').pop();
+    var forwardChain = request.header('X-Forwarded-For').split(',');
+    var lastForwardedIp = forwardChain.pop();
+    var localSubnet;
+
+    if (process.env.LOCAL_SUBNET) {
+        localSubnet = new Netmask(process.env.LOCAL_SUBNET);
+    }
+
+    if (localSubnet && localSubnet.contains(lastForwardedIp) && forwardChain.length) {
+        lastForwardedIp = forwardChain.pop();
+    }
+
     if (whitelist.contains(lastForwardedIp)) {
         next();
     } else {
-        console.info('Blocked request from: ' + lastForwardedIp);
+        console.info('Blocked request from: ' + lastForwardedIp +
+            ' (Forward chain:' + request.header('X-Forwarded-For') +')');
         response.send('', 404);
     }
 }

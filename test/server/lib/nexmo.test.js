@@ -27,6 +27,7 @@ describe('nexmo', function() {
 
         var VALID_IP = '174.36.197.200';
         var INVALID_IP = '173.194.70.102';
+        var LOCAL_IP = '10.10.2.50';
 
         describe('HEAD handler', function() {
             var spyApp = configuredApp();
@@ -126,6 +127,19 @@ describe('nexmo', function() {
                 stubForwardedForHeader(INVALID_IP + ', ' + VALID_IP);
                 var result = act();
                 assert(result);
+            });
+
+            it ('should respond if last IP is local and penultimate IP is whitelisted', function() {
+                stubForwardedForHeader(VALID_IP + ', ' + LOCAL_IP);
+                var oldLocalSubnet = process.env.LOCAL_SUBNET;
+                process.env.LOCAL_SUBNET = '10.10.2.0/24';
+                var result = act();
+                assert(result);
+                if (oldLocalSubnet === undefined) {
+                    delete process.env.LOCAL_SUBNET;
+                } else {
+                    process.env.LOCAL_SUBNET = oldLocalSubnet;
+                }
             });
 
             function verifyBlocked() {
