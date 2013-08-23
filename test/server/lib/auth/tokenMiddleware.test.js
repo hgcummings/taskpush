@@ -20,15 +20,20 @@ describe('tokenMiddleware', function() {
 
     beforeEach(function() {
         dummyMessage.userId = '447890123456';
-        dummyMessage.content = 'shaving yak';
         spyResponse = { send: sinon.spy(), next: sinon.spy() };
         spyNext = sinon.spy();
+    });
+
+    afterEach(function() {
+        delete dummyMessage.content;
+        delete dummyMessage.userId;
     });
 
     describe('when message content matches a token', function() {
         var spyClient;
 
         beforeEach(function() {
+            dummyMessage.content = 'shaving yak';
             spyClient = { setUserId: sinon.spy() };
             stubTokenSource.releaseToken = sinon.spy();
             stubTokenSource.getObjectForToken.withArgs(dummyMessage.content).returns(spyClient);
